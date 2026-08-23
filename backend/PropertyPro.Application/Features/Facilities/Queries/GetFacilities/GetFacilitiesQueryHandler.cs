@@ -16,7 +16,6 @@ public class GetFacilitiesQueryHandler
         IApplicationDbContext context)
     {
         _context = context;
-
     }
 
     public async Task<IReadOnlyList<FacilityListDto>> Handle(
