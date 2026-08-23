@@ -1,0 +1,35 @@
+﻿using Microsoft.EntityFrameworkCore;
+using PropertyPro.Domain.Entities;
+
+namespace PropertyPro.Infrastructure.Persistence;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
+
+    public DbSet<Organization> Organizations => Set<Organization>();
+
+    public DbSet<Facility> Facilities => Set<Facility>();
+
+    public DbSet<Building> Buildings => Set<Building>();
+
+    public DbSet<Floor> Floors => Set<Floor>();
+
+    public DbSet<Room> Rooms => Set<Room>();
+
+    public DbSet<AssetCategory> AssetCategories => Set<AssetCategory>();
+
+    public DbSet<Asset> Assets => Set<Asset>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(ApplicationDbContext).Assembly);
+    }
+}
