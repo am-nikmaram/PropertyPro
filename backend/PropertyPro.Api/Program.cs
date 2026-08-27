@@ -1,6 +1,5 @@
 using PropertyPro.Infrastructure;
 using PropertyPro.Infrastructure.Persistence;
-using PropertyPro.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,12 +16,20 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider
+//        .GetRequiredService<ApplicationDbContext>();
+
+//    await DatabaseSeeder.SeedAsync(context);
+//}
+
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider
-        .GetRequiredService<ApplicationDbContext>();
+    var initializer = scope.ServiceProvider
+        .GetRequiredService<DatabaseInitializer>();
 
-    await DatabaseSeeder.SeedAsync(context);
+    await initializer.InitializeAsync();
 }
 
 

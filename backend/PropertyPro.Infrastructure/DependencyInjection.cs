@@ -17,6 +17,8 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"));
         });
 
+        services.AddScoped<DatabaseInitializer>();
+
         return services;
     }
 }
