@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Infrastructure.Persistence;
 
 namespace PropertyPro.Infrastructure;
@@ -16,6 +17,9 @@ public static class DependencyInjection
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"));
         });
+
+        services.AddScoped<IApplicationDbContext>(
+         provider => provider.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped<DatabaseInitializer>();
 

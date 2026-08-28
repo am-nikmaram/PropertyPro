@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Domain.Entities;
 
 namespace PropertyPro.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options)
