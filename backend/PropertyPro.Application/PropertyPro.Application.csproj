@@ -15,8 +15,10 @@
 
   <ItemGroup>
     <Folder Include="Common\Models\" />
-    <Folder Include="Features\Facilities\Commands\" />
     <Folder Include="Features\Buildings\" />
+    <Folder Include="Features\Facilities\Commands\CreateFacility\" />
+    <Folder Include="Features\Facilities\Commands\DeleteFacility\" />
+    <Folder Include="Features\Facilities\Commands\UpdateFacility\" />
     <Folder Include="Features\Floors\" />
     <Folder Include="Features\Assets\" />
     <Folder Include="Features\Maintenance\" />
