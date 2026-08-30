@@ -126,6 +126,14 @@ public class SeedDemoDataCommandHandler
             cancellationToken);
 
 
+        await _context.Rooms.AddRangeAsync(
+    rooms,
+    cancellationToken);
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+
+
         var serverRoom = rooms
             .First(x => x.RoomNumber == "202");
 
