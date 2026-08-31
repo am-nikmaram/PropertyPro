@@ -24,7 +24,8 @@ public class GetFacilityByIdQueryHandler
     {
         return await _context.Facilities
             .AsNoTracking()
-            .Where(x => x.Id == request.Id)
+            .Where(x => x.Id == request.Id &&
+                x.IsActive)
             .Select(x => new FacilityDto(
                 x.Id,
                 x.Name,

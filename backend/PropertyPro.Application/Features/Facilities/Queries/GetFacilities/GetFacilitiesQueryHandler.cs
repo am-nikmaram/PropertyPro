@@ -25,6 +25,7 @@ public class GetFacilitiesQueryHandler
     {
         var query = _context.Facilities
             .AsNoTracking()
+            .Where(x => x.IsActive)
             .AsQueryable();
 
         // Search

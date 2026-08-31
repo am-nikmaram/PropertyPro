@@ -5,6 +5,8 @@ using PropertyPro.Application.Features.Facilities.Commands.CreateFacility;
 using PropertyPro.Application.Features.Facilities.DTOs;
 using PropertyPro.Application.Features.Facilities.Queries.GetFacilities;
 using PropertyPro.Application.Features.Facilities.Queries.GetFacilityById;
+using PropertyPro.Application.Features.Facilities.Commands.UpdateFacility;
+using PropertyPro.Application.Features.Facilities.Commands.DeleteFacility;
 
 namespace PropertyPro.Api.Controllers;
 
@@ -61,5 +63,36 @@ public class FacilitiesController : ControllerBase
             nameof(GetById),
             new { id = result.Id },
             result);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<FacilityDto>> Update(
+    int id,
+    UpdateFacilityCommand command,
+    CancellationToken cancellationToken)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest(
+                "Route ID does not match request ID.");
+        }
+
+        var result = await _sender.Send(
+            command,
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        await _sender.Send(
+            new DeleteFacilityCommand(id),
+            cancellationToken);
+
+        return NoContent();
     }
 }

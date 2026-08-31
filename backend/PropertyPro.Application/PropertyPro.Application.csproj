@@ -15,8 +15,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Buildings\" />
-    <Folder Include="Features\Facilities\Commands\DeleteFacility\" />
-    <Folder Include="Features\Facilities\Commands\UpdateFacility\" />
     <Folder Include="Features\Floors\" />
     <Folder Include="Features\Assets\" />
     <Folder Include="Features\Maintenance\" />

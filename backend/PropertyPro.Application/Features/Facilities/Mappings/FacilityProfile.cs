@@ -1,18 +1,46 @@
 ﻿using AutoMapper;
 using PropertyPro.Application.Features.Facilities.Commands.CreateFacility;
-using PropertyPro.Application.Features.Facilities.DTOs;
+using PropertyPro.Application.Features.Facilities.Commands.UpdateFacility;
 using PropertyPro.Domain.Entities;
 
-namespace PropertyPro.Application.Features.Facilities.Mappings;
+namespace PropertyPro.Application.Common.Mapping;
 
-public class FacilityProfile : Profile
+public class MappingProfile : Profile
 {
-    public FacilityProfile()
+    public MappingProfile()
     {
-        // Command → Entity
-        CreateMap<CreateFacilityCommand, Facility>();
+        CreateMap<CreateFacilityCommand, Facility>()
+            .ForMember(
+                destination => destination.Id,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedAt,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.UpdatedAt,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.IsActive,
+                options => options.Ignore());
 
-        // Entity → DTO
-        CreateMap<Facility, FacilityDto>();
+        CreateMap<UpdateFacilityCommand, Facility>()
+            .ForMember(
+                destination => destination.Id,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedAt,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.UpdatedAt,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.IsActive,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Organization,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Buildings,
+                options => options.Ignore());
     }
 }
