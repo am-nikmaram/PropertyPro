@@ -18,6 +18,7 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssembly(assembly);
+        services.AddAutoMapper(assembly);
 
         services.AddTransient(
             typeof(IPipelineBehavior<,>),

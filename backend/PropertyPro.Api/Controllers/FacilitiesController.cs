@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Application.Common.Models;
+using PropertyPro.Application.Features.Facilities.Commands.CreateFacility;
 using PropertyPro.Application.Features.Facilities.DTOs;
 using PropertyPro.Application.Features.Facilities.Queries.GetFacilities;
 using PropertyPro.Application.Features.Facilities.Queries.GetFacilityById;
@@ -18,11 +20,12 @@ public class FacilitiesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<FacilityListDto>>> GetAll(
+    public async Task<ActionResult<PagedResult<FacilityListDto>>> GetAll(
+        [FromQuery] GetFacilitiesQuery query,
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new GetFacilitiesQuery(),
+            query,
             cancellationToken);
 
         return Ok(result);
@@ -43,5 +46,20 @@ public class FacilitiesController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<FacilityDto>> Create(
+    CreateFacilityCommand command,
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            command,
+            cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = result.Id },
+            result);
     }
 }
