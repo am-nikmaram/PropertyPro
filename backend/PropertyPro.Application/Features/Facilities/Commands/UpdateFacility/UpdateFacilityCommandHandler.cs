@@ -72,7 +72,7 @@ public class UpdateFacilityCommandHandler
         _mapper.Map(request, facility);
 
         facility.Code = normalizedCode;
-        facility.UpdatedAt = DateTime.UtcNow;
+
 
         await _context.SaveChangesAsync(
             cancellationToken);

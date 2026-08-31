@@ -1,7 +1,10 @@
 using PropertyPro.Api.Middleware;
+using PropertyPro.Api.Services;
 using PropertyPro.Application;
+using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Infrastructure;
 using PropertyPro.Infrastructure.Persistence;
+using PropertyPro.Infrastructure.Persistence.Interceptors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,14 @@ builder.Services.AddExceptionHandler<
     GlobalExceptionHandler>();
 
 builder.Services.AddProblemDetails();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ICurrentUserService,
+    CurrentUserService>();
+
+builder.Services.AddScoped<
+    AuditableEntityInterceptor>();
 
 
 // Add services to the container.

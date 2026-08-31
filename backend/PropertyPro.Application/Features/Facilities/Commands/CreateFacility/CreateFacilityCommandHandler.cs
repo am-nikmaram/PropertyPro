@@ -61,8 +61,7 @@ public class CreateFacilityCommandHandler
 
         facility.Name = facility.Name.Trim();
         facility.Code = facility.Code.Trim().ToUpperInvariant();
-        facility.CreatedAt = DateTime.UtcNow;
-        facility.IsActive = true;
+
 
         await _context.Facilities.AddAsync(
             facility,

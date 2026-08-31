@@ -37,7 +37,7 @@ public class DeleteFacilityCommandHandler
         }
 
         facility.IsActive = false;
-        facility.UpdatedAt = DateTime.UtcNow;
+
 
         await _context.SaveChangesAsync(
             cancellationToken);
