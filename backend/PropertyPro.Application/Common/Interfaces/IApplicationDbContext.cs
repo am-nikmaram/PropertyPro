@@ -15,6 +15,7 @@ public interface IApplicationDbContext
     DbSet<Floor> Floors { get; }
 
     DbSet<Room> Rooms { get; }
+    DbSet<RoomType> RoomTypes { get; }
 
     DbSet<AssetCategory> AssetCategories { get; }
 

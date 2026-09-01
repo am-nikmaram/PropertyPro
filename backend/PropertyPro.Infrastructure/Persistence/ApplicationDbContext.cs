@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Floor> Floors => Set<Floor>();
 
     public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<RoomType> RoomTypes => Set<RoomType>();
 
     public DbSet<AssetCategory> AssetCategories => Set<AssetCategory>();
 
