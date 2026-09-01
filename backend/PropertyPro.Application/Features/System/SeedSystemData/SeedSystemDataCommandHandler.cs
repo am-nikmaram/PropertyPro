@@ -20,8 +20,17 @@ public class SeedSystemDataCommandHandler
         SeedSystemDataCommand request,
         CancellationToken cancellationToken)
     {
-        if (await _context.AssetCategories.AnyAsync(
-                cancellationToken))
+        await SeedAssetCategoriesAsync(cancellationToken);
+
+        await SeedRoomTypesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task SeedAssetCategoriesAsync(
+        CancellationToken cancellationToken)
+    {
+        if (await _context.AssetCategories
+            .AnyAsync(cancellationToken))
         {
             return;
         }
@@ -80,8 +89,98 @@ public class SeedSystemDataCommandHandler
         await _context.AssetCategories.AddRangeAsync(
             categories,
             cancellationToken);
+    }
 
-        await _context.SaveChangesAsync(
+    private async Task SeedRoomTypesAsync(
+        CancellationToken cancellationToken)
+    {
+        if (await _context.RoomTypes
+            .AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        var roomTypes = new[]
+        {
+            new RoomType
+            {
+                Name = "Office",
+                Description = "General office space"
+            },
+
+            new RoomType
+            {
+                Name = "Meeting Room",
+                Description =
+                    "Meeting and conference room"
+            },
+
+            new RoomType
+            {
+                Name = "Laboratory",
+                Description =
+                    "Laboratory space"
+            },
+
+            new RoomType
+            {
+                Name = "Storage",
+                Description =
+                    "Storage area"
+            },
+
+            new RoomType
+            {
+                Name = "Server Room",
+                Description =
+                    "IT server room"
+            },
+
+            new RoomType
+            {
+                Name = "Workshop",
+                Description =
+                    "Workshop area"
+            },
+
+            new RoomType
+            {
+                Name = "Lobby",
+                Description =
+                    "Lobby and reception area"
+            },
+
+            new RoomType
+            {
+                Name = "Restroom",
+                Description =
+                    "Restroom"
+            },
+
+            new RoomType
+            {
+                Name = "Electrical Room",
+                Description =
+                    "Electrical equipment room"
+            },
+
+            new RoomType
+            {
+                Name = "Security Room",
+                Description =
+                    "Security and monitoring room"
+            },
+
+            new RoomType
+            {
+                Name = "Other",
+                Description =
+                    "Other room type"
+            }
+        };
+
+        await _context.RoomTypes.AddRangeAsync(
+            roomTypes,
             cancellationToken);
     }
 }
