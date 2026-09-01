@@ -12,6 +12,7 @@ public class Floor : BaseEntity
     public int FloorNumber { get; set; }
 
     public string? Description { get; set; }
+    public decimal? TotalArea { get; set; }
 
     public Building Building { get; set; } = null!;
 

@@ -24,7 +24,8 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(
     (serviceProvider, options) =>
     {
-        options.UseSqlServer("DefaultConnection");
+        //options.UseSqlServer("DefaultConnection");
+        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 
         options.AddInterceptors(
             serviceProvider.GetRequiredService<
