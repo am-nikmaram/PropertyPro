@@ -20,6 +20,13 @@ public class BuildingConfiguration
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(x => x.YearBuilt)
+    .IsRequired(false);
+
+        builder.Property(x => x.TotalArea)
+            .HasPrecision(18, 2)
+            .IsRequired(false);
+
         builder.Property(x => x.TotalArea)
             .HasPrecision(18, 2);
 

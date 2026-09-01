@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Buildings\" />
     <Folder Include="Features\Floors\" />
     <Folder Include="Features\Assets\" />
     <Folder Include="Features\Maintenance\" />
