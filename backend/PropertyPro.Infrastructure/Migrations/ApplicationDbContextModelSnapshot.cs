@@ -374,6 +374,10 @@ namespace PropertyPro.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("Area")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int?>("Capacity")
                         .HasColumnType("int");
 
@@ -382,6 +386,10 @@ namespace PropertyPro.Infrastructure.Migrations
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("FloorId")
                         .HasColumnType("int");
@@ -399,7 +407,48 @@ namespace PropertyPro.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("RoomType")
+                    b.Property<int>("RoomTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomTypeId");
+
+                    b.HasIndex("FloorId", "RoomNumber")
+                        .IsUnique();
+
+                    b.ToTable("Rooms", (string)null);
+                });
+
+            modelBuilder.Entity("PropertyPro.Domain.Entities.RoomType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -411,10 +460,10 @@ namespace PropertyPro.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FloorId", "RoomNumber")
+                    b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Rooms");
+                    b.ToTable("RoomTypes", (string)null);
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Asset", b =>
@@ -477,7 +526,15 @@ namespace PropertyPro.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PropertyPro.Domain.Entities.RoomType", "RoomType")
+                        .WithMany("Rooms")
+                        .HasForeignKey("RoomTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Floor");
+
+                    b.Navigation("RoomType");
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.AssetCategory", b =>
@@ -508,6 +565,11 @@ namespace PropertyPro.Infrastructure.Migrations
             modelBuilder.Entity("PropertyPro.Domain.Entities.Room", b =>
                 {
                     b.Navigation("Assets");
+                });
+
+            modelBuilder.Entity("PropertyPro.Domain.Entities.RoomType", b =>
+                {
+                    b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618
         }

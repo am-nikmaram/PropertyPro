@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using PropertyPro.Application.Features.Rooms.UpdateRoom;
 
 namespace PropertyPro.Application.Features.Rooms.Commands.UpdateRoom;
 

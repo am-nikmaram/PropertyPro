@@ -20,6 +20,10 @@ public class SeedDemoDataCommandHandler
         SeedDemoDataCommand request,
         CancellationToken cancellationToken)
     {
+        // -------------------------------------------------
+        // Prevent duplicate demo data
+        // -------------------------------------------------
+
         var organizationExists =
             await _context.Organizations
                 .AnyAsync(
@@ -31,6 +35,49 @@ public class SeedDemoDataCommandHandler
             return;
         }
 
+        // -------------------------------------------------
+        // Get system/master data
+        // -------------------------------------------------
+
+        var officeRoomType =
+            await _context.RoomTypes
+                .FirstAsync(
+                    x => x.Name == "Office" &&
+                         x.IsActive,
+                    cancellationToken);
+
+        var meetingRoomType =
+            await _context.RoomTypes
+                .FirstAsync(
+                    x => x.Name == "Meeting Room" &&
+                         x.IsActive,
+                    cancellationToken);
+
+        var serverRoomType =
+            await _context.RoomTypes
+                .FirstAsync(
+                    x => x.Name == "Server Room" &&
+                         x.IsActive,
+                    cancellationToken);
+
+        var hvacCategory =
+            await _context.AssetCategories
+                .FirstAsync(
+                    x => x.Code == "HVAC" &&
+                         x.IsActive,
+                    cancellationToken);
+
+        var electricalCategory =
+            await _context.AssetCategories
+                .FirstAsync(
+                    x => x.Code == "ELEC" &&
+                         x.IsActive,
+                    cancellationToken);
+
+        // -------------------------------------------------
+        // Organization
+        // -------------------------------------------------
+
         var organization = new Organization
         {
             Name = "PropertyPro Demo Corporation",
@@ -38,6 +85,10 @@ public class SeedDemoDataCommandHandler
             Description =
                 "Demo organization for PropertyPro"
         };
+
+        // -------------------------------------------------
+        // Facility
+        // -------------------------------------------------
 
         var facility = new Facility
         {
@@ -50,6 +101,10 @@ public class SeedDemoDataCommandHandler
             Organization = organization
         };
 
+        // -------------------------------------------------
+        // Building
+        // -------------------------------------------------
+
         var building = new Building
         {
             Name = "Main Office Building",
@@ -60,6 +115,10 @@ public class SeedDemoDataCommandHandler
             TotalArea = 12500,
             Facility = facility
         };
+
+        // -------------------------------------------------
+        // Floors
+        // -------------------------------------------------
 
         var floor1 = new Floor
         {
@@ -79,13 +138,17 @@ public class SeedDemoDataCommandHandler
             Building = building
         };
 
+        // -------------------------------------------------
+        // Rooms
+        // -------------------------------------------------
+
         var rooms = new[]
         {
             new Room
             {
                 RoomNumber = "101",
                 Name = "Reception",
-                RoomType = "Office",
+                RoomTypeId = officeRoomType.Id,
                 Capacity = 10,
                 Floor = floor1
             },
@@ -94,7 +157,7 @@ public class SeedDemoDataCommandHandler
             {
                 RoomNumber = "102",
                 Name = "Conference Room",
-                RoomType = "Meeting",
+                RoomTypeId = meetingRoomType.Id,
                 Capacity = 20,
                 Floor = floor1
             },
@@ -103,7 +166,7 @@ public class SeedDemoDataCommandHandler
             {
                 RoomNumber = "201",
                 Name = "IT Department",
-                RoomType = "Office",
+                RoomTypeId = officeRoomType.Id,
                 Capacity = 15,
                 Floor = floor2
             },
@@ -112,11 +175,15 @@ public class SeedDemoDataCommandHandler
             {
                 RoomNumber = "202",
                 Name = "Server Room",
-                RoomType = "Technical",
+                RoomTypeId = serverRoomType.Id,
                 Capacity = 4,
                 Floor = floor2
             }
         };
+
+        // -------------------------------------------------
+        // Add Organization hierarchy
+        // -------------------------------------------------
 
         await _context.Organizations.AddAsync(
             organization,
@@ -125,66 +192,88 @@ public class SeedDemoDataCommandHandler
         await _context.SaveChangesAsync(
             cancellationToken);
 
+        // -------------------------------------------------
+        // Add Rooms
+        // -------------------------------------------------
 
         await _context.Rooms.AddRangeAsync(
-    rooms,
-    cancellationToken);
+            rooms,
+            cancellationToken);
 
         await _context.SaveChangesAsync(
             cancellationToken);
 
+        // -------------------------------------------------
+        // Get Server Room
+        // -------------------------------------------------
 
         var serverRoom = rooms
             .First(x => x.RoomNumber == "202");
 
-        var hvacCategory = await _context.AssetCategories
-            .FirstAsync(
-                x => x.Code == "HVAC",
-                cancellationToken);
-
-        var electricalCategory = await _context.AssetCategories
-            .FirstAsync(
-                x => x.Code == "ELEC",
-                cancellationToken);
+        // -------------------------------------------------
+        // Assets
+        // -------------------------------------------------
 
         var assets = new[]
         {
-    new Asset
-    {
-        AssetNumber = "HVAC-0001",
-        Name = "Main HVAC Unit",
-        AssetCategoryId = hvacCategory.Id,
-        RoomId = serverRoom.Id,
-        Manufacturer = "Carrier",
-        Model = "X500",
-        SerialNumber = "CAR-2025-0001",
-        InstallationDate =
-            new DateTime(2022, 5, 10),
-        WarrantyStartDate =
-            new DateTime(2022, 5, 10),
-        WarrantyEndDate =
-            new DateTime(2027, 5, 10),
-        PurchaseCost = 18500,
-        Criticality = "High",
-        Status = "Operational"
-    },
+            new Asset
+            {
+                AssetNumber = "HVAC-0001",
+                Name = "Main HVAC Unit",
 
-    new Asset
-    {
-        AssetNumber = "ELEC-0001",
-        Name = "Main Electrical Panel",
-        AssetCategoryId = electricalCategory.Id,
-        RoomId = serverRoom.Id,
-        Manufacturer = "Schneider Electric",
-        Model = "MNS",
-        SerialNumber = "SCH-2023-001",
-        InstallationDate =
-            new DateTime(2023, 2, 15),
-        PurchaseCost = 9200,
-        Criticality = "Critical",
-        Status = "Operational"
-    }
-};
+                AssetCategoryId =
+                    hvacCategory.Id,
+
+                RoomId =
+                    serverRoom.Id,
+
+                Manufacturer = "Carrier",
+                Model = "X500",
+                SerialNumber = "CAR-2025-0001",
+
+                InstallationDate =
+                    new DateTime(2022, 5, 10),
+
+                WarrantyStartDate =
+                    new DateTime(2022, 5, 10),
+
+                WarrantyEndDate =
+                    new DateTime(2027, 5, 10),
+
+                PurchaseCost = 18500,
+
+                Criticality = "High",
+                Status = "Operational"
+            },
+
+            new Asset
+            {
+                AssetNumber = "ELEC-0001",
+                Name = "Main Electrical Panel",
+
+                AssetCategoryId =
+                    electricalCategory.Id,
+
+                RoomId =
+                    serverRoom.Id,
+
+                Manufacturer =
+                    "Schneider Electric",
+
+                Model = "MNS",
+
+                SerialNumber =
+                    "SCH-2023-001",
+
+                InstallationDate =
+                    new DateTime(2023, 2, 15),
+
+                PurchaseCost = 9200,
+
+                Criticality = "Critical",
+                Status = "Operational"
+            }
+        };
 
         await _context.Assets.AddRangeAsync(
             assets,

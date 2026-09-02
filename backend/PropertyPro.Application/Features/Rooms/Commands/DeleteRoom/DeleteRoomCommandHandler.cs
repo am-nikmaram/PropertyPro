@@ -32,6 +32,17 @@ public class DeleteRoomCommandHandler
                 $"Room with ID {request.Id} was not found.");
         }
 
+        var hasActiveAssets = await _context.Assets
+    .AnyAsync(
+        x => x.RoomId == request.Id && x.IsActive,
+        cancellationToken);
+
+        if (hasActiveAssets)
+        {
+            throw new ConflictException(
+                "This room cannot be deleted because it has active assets.");
+        }
+
         room.IsActive = false;
 
         await _context.SaveChangesAsync(

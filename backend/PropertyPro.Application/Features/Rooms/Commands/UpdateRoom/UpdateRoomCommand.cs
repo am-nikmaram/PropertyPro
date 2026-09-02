@@ -11,5 +11,5 @@ public record UpdateRoomCommand(
     string Name,
     string? Description,
     decimal? Area,
-    int? Capacity)
-    : IRequest<RoomDto>;
+    int? Capacity
+) : IRequest<RoomDto>;

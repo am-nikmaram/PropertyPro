@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Exceptions;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Application.Features.Rooms.DTOs;
+using PropertyPro.Application.Features.Rooms.Commands.UpdateRoom;
 
-namespace PropertyPro.Application.Features.Rooms.Commands.UpdateRoom;
+namespace PropertyPro.Application.Features.Rooms.UpdateRoom;
 
 public class UpdateRoomCommandHandler
     : IRequestHandler<UpdateRoomCommand, RoomDto>
@@ -27,80 +28,62 @@ public class UpdateRoomCommandHandler
     {
         var room = await _context.Rooms
             .FirstOrDefaultAsync(
-                x => x.Id == request.Id &&
-                     x.IsActive,
+                x => x.Id == request.Id && x.IsActive,
                 cancellationToken);
 
         if (room is null)
-        {
             throw new NotFoundException(
                 $"Room with ID {request.Id} was not found.");
-        }
 
-        var floorExists =
-            await _context.Floors
-                .AnyAsync(
-                    x => x.Id == request.FloorId &&
-                         x.IsActive,
-                    cancellationToken);
+        // Validate Floor
+        var floorExists = await _context.Floors
+            .AnyAsync(
+                x => x.Id == request.FloorId && x.IsActive,
+                cancellationToken);
 
         if (!floorExists)
-        {
             throw new NotFoundException(
-                $"Floor with ID {request.FloorId} " +
-                "was not found.");
-        }
+                $"Floor with ID {request.FloorId} was not found.");
 
-        var roomTypeExists =
-            await _context.RoomTypes
-                .AnyAsync(
-                    x => x.Id == request.RoomTypeId &&
-                         x.IsActive,
-                    cancellationToken);
+        // Validate Room Type
+        var roomTypeExists = await _context.RoomTypes
+            .AnyAsync(
+                x => x.Id == request.RoomTypeId && x.IsActive,
+                cancellationToken);
 
         if (!roomTypeExists)
-        {
             throw new NotFoundException(
-                $"Room type with ID {request.RoomTypeId} " +
-                "was not found.");
-        }
+                $"Room Type with ID {request.RoomTypeId} was not found.");
 
-        var roomNumber =
-            request.RoomNumber.Trim().ToUpperInvariant();
+        // Check duplicate room number
+        var duplicateRoomNumber = await _context.Rooms
+            .AnyAsync(
+                x =>
+                    x.Id != request.Id &&
+                    x.FloorId == request.FloorId &&
+                    x.RoomNumber == request.RoomNumber.Trim() &&
+                    x.IsActive,
+                cancellationToken);
 
-        var duplicateRoomExists =
-            await _context.Rooms
-                .AnyAsync(
-                    x =>
-                        x.Id != request.Id &&
-                        x.FloorId == request.FloorId &&
-                        x.RoomNumber == roomNumber &&
-                        x.IsActive,
-                    cancellationToken);
-
-        if (duplicateRoomExists)
-        {
+        if (duplicateRoomNumber)
             throw new ConflictException(
-                "A room with this number already exists " +
-                "on the floor.");
-        }
+                $"Room number '{request.RoomNumber}' already exists on this floor.");
 
+        // Map command → entity
         _mapper.Map(request, room);
 
-        room.RoomNumber = roomNumber;
+        // Normalize strings
+        room.RoomNumber = request.RoomNumber.Trim();
         room.Name = request.Name.Trim();
 
-        room.Description =
-            request.Description?.Trim();
+        if (request.Description is not null)
+            room.Description = request.Description.Trim();
 
-        await _context.SaveChangesAsync(
-            cancellationToken);
-
-        var roomTypeName =
-            await _context.RoomTypes
-                .Where(x => x.Id == room.RoomTypeId)
-                .Select(x => x.Name)
-                .FirstAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        var roomTypeName = await _context.RoomTypes
+    .Where(x => x.Id == room.RoomTypeId)
+    .Select(x => x.Name)
+    .FirstAsync(cancellationToken);
 
         return new RoomDto(
             room.Id,

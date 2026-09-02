@@ -23,6 +23,7 @@ public class SeedSystemDataCommandHandler
         await SeedAssetCategoriesAsync(cancellationToken);
 
         await SeedRoomTypesAsync(cancellationToken);
+
         await _context.SaveChangesAsync(cancellationToken);
     }
 
@@ -105,7 +106,8 @@ public class SeedSystemDataCommandHandler
             new RoomType
             {
                 Name = "Office",
-                Description = "General office space"
+                Description =
+                    "General office space"
             },
 
             new RoomType
