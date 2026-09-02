@@ -1,11 +1,12 @@
-﻿using FluentValidation;
+﻿
+using FluentValidation;
 
 namespace PropertyPro.Application.Features.Rooms.Commands.CreateRoom;
 
-public class CreateRoomCommandValidator
+public class CreateRoomValidator
     : AbstractValidator<CreateRoomCommand>
 {
-    public CreateRoomCommandValidator()
+    public CreateRoomValidator()
     {
         RuleFor(x => x.FloorId)
             .GreaterThan(0)
@@ -28,10 +29,13 @@ public class CreateRoomCommandValidator
 
         RuleFor(x => x.Area)
             .GreaterThan(0)
-            .When(x => x.Area.HasValue);
+            .When(x => x.Area.HasValue)
+            .WithMessage("Area must be greater than zero.");
 
         RuleFor(x => x.Capacity)
             .GreaterThan(0)
-            .When(x => x.Capacity.HasValue);
+            .When(x => x.Capacity.HasValue)
+            .WithMessage("Capacity must be greater than zero.");
     }
 }
+

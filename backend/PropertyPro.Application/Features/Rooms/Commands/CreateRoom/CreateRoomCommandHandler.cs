@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Exceptions;
@@ -26,79 +27,56 @@ public class CreateRoomCommandHandler
         CreateRoomCommand request,
         CancellationToken cancellationToken)
     {
-        var floorExists =
-            await _context.Floors
-                .AnyAsync(
-                    x => x.Id == request.FloorId &&
-                         x.IsActive,
-                    cancellationToken);
+        var roomNumber = request.RoomNumber.Trim().ToUpperInvariant();
+
+        var floorExists = await _context.Floors
+            .AnyAsync(
+                x => x.Id == request.FloorId &&
+                     x.IsActive,
+                cancellationToken);
 
         if (!floorExists)
-        {
             throw new NotFoundException(
-                $"Floor with ID {request.FloorId} " +
-                "was not found.");
-        }
+                $"Floor with ID {request.FloorId} was not found.");
 
-        var roomTypeExists =
-            await _context.RoomTypes
-                .AnyAsync(
-                    x => x.Id == request.RoomTypeId &&
-                         x.IsActive,
-                    cancellationToken);
+        var roomType = await _context.RoomTypes
+            .FirstOrDefaultAsync(
+                x => x.Id == request.RoomTypeId &&
+                     x.IsActive,
+                cancellationToken);
 
-        if (!roomTypeExists)
-        {
+        if (roomType is null)
             throw new NotFoundException(
-                $"Room type with ID {request.RoomTypeId} " +
-                "was not found.");
-        }
+                $"Room type with ID {request.RoomTypeId} was not found.");
 
-        var roomNumber =
-            request.RoomNumber.Trim().ToUpperInvariant();
+        var duplicateRoom = await _context.Rooms
+            .AnyAsync(
+                x => x.FloorId == request.FloorId &&
+                     x.RoomNumber == roomNumber &&
+                     x.IsActive,
+                cancellationToken);
 
-        var roomExists =
-            await _context.Rooms
-                .AnyAsync(
-                    x =>
-                        x.FloorId == request.FloorId &&
-                        x.RoomNumber == roomNumber &&
-                        x.IsActive,
-                    cancellationToken);
-
-        if (roomExists)
+        if (duplicateRoom)
         {
             throw new ConflictException(
-                "A room with this number already exists " +
-                "on the floor.");
+                $"Room '{roomNumber}' already exists on this floor.");
         }
 
         var room = _mapper.Map<Room>(request);
 
         room.RoomNumber = roomNumber;
         room.Name = request.Name.Trim();
+        room.Description = request.Description?.Trim();
 
-        room.Description =
-            request.Description?.Trim();
+        _context.Rooms.Add(room);
 
-        await _context.Rooms.AddAsync(
-            room,
-            cancellationToken);
-
-        await _context.SaveChangesAsync(
-            cancellationToken);
-
-        var roomTypeName =
-            await _context.RoomTypes
-                .Where(x => x.Id == room.RoomTypeId)
-                .Select(x => x.Name)
-                .FirstAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new RoomDto(
             room.Id,
             room.FloorId,
             room.RoomTypeId,
-            roomTypeName,
+            roomType.Name,
             room.RoomNumber,
             room.Name,
             room.Description,
@@ -107,3 +85,4 @@ public class CreateRoomCommandHandler
             room.IsActive);
     }
 }
+
