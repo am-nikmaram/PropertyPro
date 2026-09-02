@@ -10,49 +10,51 @@ public class AssetConfiguration
     public void Configure(
         EntityTypeBuilder<Asset> builder)
     {
+        builder.ToTable("Assets");
+
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.AssetNumber)
-            .HasMaxLength(50)
-            .IsRequired();
+        builder.Property(x => x.AssetTag)
+            .IsRequired()
+            .HasMaxLength(50);
 
         builder.Property(x => x.Name)
-            .HasMaxLength(200)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(200);
 
-        builder.Property(x => x.Manufacturer)
-            .HasMaxLength(150);
-
-        builder.Property(x => x.Model)
-            .HasMaxLength(150);
+        builder.Property(x => x.Description)
+            .HasMaxLength(1000);
 
         builder.Property(x => x.SerialNumber)
-            .HasMaxLength(150);
+            .HasMaxLength(100);
+
+        builder.Property(x => x.Manufacturer)
+            .HasMaxLength(100);
+
+        builder.Property(x => x.Model)
+            .HasMaxLength(100);
 
         builder.Property(x => x.PurchaseCost)
             .HasPrecision(18, 2);
 
-        builder.Property(x => x.Criticality)
-            .HasMaxLength(50);
-
         builder.Property(x => x.Status)
-            .HasMaxLength(50);
+            .IsRequired();
 
-        builder.HasIndex(x => x.AssetNumber)
+        builder.HasIndex(x => x.AssetTag)
             .IsUnique();
 
         builder.HasIndex(x => x.SerialNumber)
             .IsUnique()
             .HasFilter("[SerialNumber] IS NOT NULL");
 
-        builder.HasOne(x => x.AssetCategory)
-            .WithMany(x => x.Assets)
-            .HasForeignKey(x => x.AssetCategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasOne(x => x.Room)
             .WithMany(x => x.Assets)
             .HasForeignKey(x => x.RoomId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.AssetCategory)
+            .WithMany(x => x.Assets)
+            .HasForeignKey(x => x.AssetCategoryId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

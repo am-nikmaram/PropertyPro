@@ -1,5 +1,6 @@
 ﻿using PropertyPro.Domain.Common;
 using PropertyPro.Domain.Entities;
+using PropertyPro.Domain.Enums;
 
 namespace PropertyPro.Domain.Entities;
 
