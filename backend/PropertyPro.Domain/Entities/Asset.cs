@@ -1,5 +1,4 @@
 ﻿using PropertyPro.Domain.Common;
-using PropertyPro.Domain.Entities;
 using PropertyPro.Domain.Enums;
 
 namespace PropertyPro.Domain.Entities;
@@ -28,9 +27,9 @@ public class Asset : BaseEntity
 
     public decimal? PurchaseCost { get; set; }
 
-    public string? Criticality { get; set; }
+    public AssetCriticality Criticality { get; set; }
 
-    public string? Status { get; set; }
+    public AssetStatus Status { get; set; }
 
     public string? Description { get; set; }
 

@@ -11,23 +11,23 @@ public class AssetProfile : Profile
     public AssetProfile()
     {
         CreateMap<CreateAssetCommand, Asset>()
-            .ForMember(dest => dest.Id,
+            .ForMember(
+                dest => dest.Id,
                 opt => opt.Ignore())
-            .ForMember(dest => dest.IsActive,
+            .ForMember(
+                dest => dest.IsActive,
                 opt => opt.Ignore())
-            .ForMember(dest => dest.Room,
+            .ForMember(
+                dest => dest.AssetCategory,
                 opt => opt.Ignore())
-            .ForMember(dest => dest.AssetCategory,
+            .ForMember(
+                dest => dest.Room,
                 opt => opt.Ignore());
-
         CreateMap<UpdateAssetCommand, Asset>()
-            .ForMember(dest => dest.Id,
-                opt => opt.Ignore())
-            .ForMember(dest => dest.IsActive,
-                opt => opt.Ignore())
-            .ForMember(dest => dest.Room,
-                opt => opt.Ignore())
-            .ForMember(dest => dest.AssetCategory,
-                opt => opt.Ignore());
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.AssetNumber, opt => opt.Ignore())
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore())
+            .ForMember(dest => dest.AssetCategory, opt => opt.Ignore())
+            .ForMember(dest => dest.Room, opt => opt.Ignore());
     }
 }

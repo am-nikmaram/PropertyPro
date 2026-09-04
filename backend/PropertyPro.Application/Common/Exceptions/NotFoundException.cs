@@ -6,4 +6,8 @@ public class NotFoundException : Exception
         : base(message)
     {
     }
+
+    public NotFoundException(string entityName, object key) 
+        : base($"{entityName} with id '{key}' was not found.") 
+    { }
 }

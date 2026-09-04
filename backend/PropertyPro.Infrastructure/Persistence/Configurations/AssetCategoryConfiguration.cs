@@ -16,7 +16,7 @@ public class AssetCategoryConfiguration
 
         builder.Property(x => x.Code)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(20);
 
         builder.Property(x => x.Name)
             .IsRequired()

@@ -10,7 +10,7 @@ public class CreateAssetCategoryValidator
     {
         RuleFor(x => x.Code)
             .NotEmpty()
-            .MaximumLength(50)
+            .MaximumLength(20)
             .Matches("^[A-Za-z0-9_-]+$")
             .WithMessage(
                 "Code can contain only letters, numbers, hyphens and underscores.");

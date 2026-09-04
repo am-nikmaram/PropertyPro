@@ -6,16 +6,18 @@ using PropertyPro.Domain.Enums;
 namespace PropertyPro.Application.Features.Assets.Commands.CreateAsset;
 
 public record CreateAssetCommand(
-    int RoomId,
-    int AssetCategoryId,
-    string AssetTag,
+    string AssetNumber,
     string Name,
-    string? Description,
-    string? SerialNumber,
+    int AssetCategoryId,
+    int RoomId,
     string? Manufacturer,
     string? Model,
-    DateTime? PurchaseDate,
+    string? SerialNumber,
+    DateTime? InstallationDate,
+    DateTime? WarrantyStartDate,
+    DateTime? WarrantyEndDate,
     decimal? PurchaseCost,
-    DateTime? WarrantyExpiryDate,
-    AssetStatus Status
+    AssetCriticality Criticality,
+    AssetStatus Status,
+    string? Description
 ) : IRequest<AssetDto>;
