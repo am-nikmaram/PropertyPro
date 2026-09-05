@@ -36,4 +36,7 @@ public class Asset : BaseEntity
     public AssetCategory AssetCategory { get; set; } = null!;
 
     public Room Room { get; set; } = null!;
+
+    public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
+    = new List<MaintenanceRecord>();
 }

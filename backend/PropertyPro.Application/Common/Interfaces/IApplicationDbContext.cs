@@ -20,6 +20,7 @@ public interface IApplicationDbContext
     DbSet<AssetCategory> AssetCategories { get; }
 
     DbSet<Asset> Assets { get; }
+    DbSet<MaintenanceRecord> MaintenanceRecords { get; }
 
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken);
