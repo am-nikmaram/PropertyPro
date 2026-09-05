@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Facilities.Commands.CreateFacility;
+using PropertyPro.Application.Features.Facilities.Commands.DeleteFacility;
+using PropertyPro.Application.Features.Facilities.Commands.UpdateFacility;
 using PropertyPro.Application.Features.Facilities.DTOs;
 using PropertyPro.Application.Features.Facilities.Queries.GetFacilities;
 using PropertyPro.Application.Features.Facilities.Queries.GetFacilityById;
-using PropertyPro.Application.Features.Facilities.Commands.UpdateFacility;
-using PropertyPro.Application.Features.Facilities.Commands.DeleteFacility;
+using PropertyPro.Application.Features.Facilities.Queries.GetFacilityLookup;
 
 namespace PropertyPro.Api.Controllers;
 
@@ -95,4 +96,18 @@ public class FacilitiesController : ControllerBase
 
         return NoContent();
     }
+
+
+[HttpGet("lookup")]
+public async Task<IActionResult> GetLookup(
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetFacilityLookupQuery(),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+
 }

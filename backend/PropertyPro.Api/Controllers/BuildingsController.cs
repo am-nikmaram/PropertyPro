@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Buildings.Commands.CreateBuilding;
+using PropertyPro.Application.Features.Buildings.Commands.DeleteBuilding;
+using PropertyPro.Application.Features.Buildings.Commands.UpdateBuilding;
 using PropertyPro.Application.Features.Buildings.DTOs;
 using PropertyPro.Application.Features.Buildings.Queries.GetBuildingById;
+using PropertyPro.Application.Features.Buildings.Queries.GetBuildingLookup;
 using PropertyPro.Application.Features.Buildings.Queries.GetBuildings;
-using PropertyPro.Application.Features.Buildings.Commands.UpdateBuilding;
-using PropertyPro.Application.Features.Buildings.Commands.DeleteBuilding;
 
 namespace PropertyPro.Api.Controllers;
 
@@ -96,4 +97,19 @@ public class BuildingsController : ControllerBase
 
         return NoContent();
     }
+
+
+[HttpGet("lookup")]
+public async Task<IActionResult> GetLookup(
+    [FromQuery] int? facilityId,
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetBuildingLookupQuery(facilityId),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+
 }

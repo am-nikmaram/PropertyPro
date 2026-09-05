@@ -5,6 +5,7 @@ using PropertyPro.Application.Features.AssetCategories.Commands.DeleteAssetCateg
 using PropertyPro.Application.Features.AssetCategories.Commands.UpdateAssetCategory;
 using PropertyPro.Application.Features.AssetCategories.Queries.GetAssetCategories;
 using PropertyPro.Application.Features.AssetCategories.Queries.GetAssetCategoryById;
+using PropertyPro.Application.Features.AssetCategories.Queries.GetAssetCategoryLookup;
 
 namespace PropertyPro.Api.Controllers;
 
@@ -85,4 +86,17 @@ public class AssetCategoriesController : ControllerBase
 
         return NoContent();
     }
+
+[HttpGet("lookup")]
+public async Task<IActionResult> GetLookup(
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetAssetCategoryLookupQuery(),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+
 }

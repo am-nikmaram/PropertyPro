@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Domain.Entities;
+using PropertyPro.Domain.Enums;
 
 namespace PropertyPro.Application.Features.System.SeedDemoData;
 
@@ -242,8 +243,9 @@ public class SeedDemoDataCommandHandler
 
                 PurchaseCost = 18500,
 
-                Criticality = "High",
-                Status = "Operational"
+                
+                Criticality = AssetCriticality.High,
+                Status = AssetStatus.Active
             },
 
             new Asset
@@ -270,8 +272,9 @@ public class SeedDemoDataCommandHandler
 
                 PurchaseCost = 9200,
 
-                Criticality = "Critical",
-                Status = "Operational"
+                
+                Criticality = AssetCriticality.Critical,
+                Status = AssetStatus.Active
             }
         };
 

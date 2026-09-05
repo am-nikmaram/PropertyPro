@@ -6,6 +6,7 @@ using PropertyPro.Application.Features.Floors.Commands.DeleteFloor;
 using PropertyPro.Application.Features.Floors.Commands.UpdateFloor;
 using PropertyPro.Application.Features.Floors.DTOs;
 using PropertyPro.Application.Features.Floors.Queries.GetFloorById;
+using PropertyPro.Application.Features.Floors.Queries.GetFloorLookup;
 using PropertyPro.Application.Features.Floors.Queries.GetFloors;
 
 namespace PropertyPro.Api.Controllers;
@@ -96,4 +97,17 @@ public class FloorsController : ControllerBase
 
         return NoContent();
     }
+
+[HttpGet("lookup")]
+public async Task<IActionResult> GetLookup(
+    [FromQuery] int? buildingId,
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetFloorLookupQuery(buildingId),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
 }

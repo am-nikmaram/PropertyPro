@@ -6,6 +6,7 @@ using PropertyPro.Application.Features.Rooms.Commands.DeleteRoom;
 using PropertyPro.Application.Features.Rooms.Commands.UpdateRoom;
 using PropertyPro.Application.Features.Rooms.DTOs;
 using PropertyPro.Application.Features.Rooms.Queries.GetRoomById;
+using PropertyPro.Application.Features.Rooms.Queries.GetRoomLookup;
 using PropertyPro.Application.Features.Rooms.Queries.GetRooms;
 
 namespace PropertyPro.Api.Controllers;
@@ -96,4 +97,19 @@ public class RoomsController : ControllerBase
 
         return NoContent();
     }
+
+
+[HttpGet("lookup")]
+public async Task<IActionResult> GetLookup(
+    [FromQuery] int? floorId,
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetRoomLookupQuery(floorId),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+
 }
