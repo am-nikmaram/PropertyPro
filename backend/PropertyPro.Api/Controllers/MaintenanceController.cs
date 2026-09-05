@@ -1,6 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PropertyPro.Application.Features.Maintenance.Commands.CreateMaintenance;
+using PropertyPro.Application.Features.Maintenance.Commands.DeleteMaintenance;
+using PropertyPro.Application.Features.Maintenance.Commands.UpdateMaintenance;
+using PropertyPro.Application.Features.Maintenance.Queries.GetMaintenanceById;
+using PropertyPro.Application.Features.Maintenance.Queries.GetMaintenances;
 
 namespace PropertyPro.Api.Controllers;
 
@@ -33,10 +37,63 @@ public class MaintenanceController : ControllerBase
     }
 
 
-    [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(
+        int id,
+        UpdateMaintenanceCommand command,
+        CancellationToken cancellationToken)
     {
-        // We will implement this in the next query step
-        return Ok();
+        if (id != command.Id)
+            return BadRequest();
+
+
+        var result = await _mediator.Send(
+            command,
+            cancellationToken);
+
+
+        return Ok(result);
     }
+
+
+
+  
+[HttpDelete("{id:int}")]
+public async Task<IActionResult> Delete(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        await _mediator.Send(
+            new DeleteMaintenanceCommand(id),
+            cancellationToken);
+
+        return NoContent();
+    }
+
+[HttpGet("{id:int}")]
+public async Task<IActionResult> GetById(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new GetMaintenanceByIdQuery(id),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(
+    [FromQuery] GetMaintenancesQuery query,
+    CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            query,
+            cancellationToken);
+
+        return Ok(result);
+    }
+
 }
