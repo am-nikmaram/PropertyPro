@@ -16,6 +16,6 @@ public class Floor : BaseEntity
 
     public Building Building { get; set; } = null!;
 
-    public ICollection<Room> Rooms { get; set; }
-        = new List<Room>();
+    public ICollection<Unit> Units { get; set; }
+        = new List<Unit>();
 }

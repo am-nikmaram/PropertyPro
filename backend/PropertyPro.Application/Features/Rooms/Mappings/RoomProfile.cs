@@ -29,7 +29,7 @@ public class RoomProfile : Profile
                 dest => dest.IsActive,
                 opt => opt.Ignore())
             .ForMember(
-                dest => dest.Floor,
+                dest => dest.Unit,
                 opt => opt.Ignore())
             .ForMember(
                 dest => dest.RoomType,
@@ -58,7 +58,7 @@ public class RoomProfile : Profile
                 dest => dest.IsActive,
                 opt => opt.Ignore())
             .ForMember(
-                dest => dest.Floor,
+                dest => dest.Unit,
                 opt => opt.Ignore())
             .ForMember(
                 dest => dest.RoomType,

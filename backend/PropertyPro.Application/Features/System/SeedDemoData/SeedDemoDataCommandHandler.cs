@@ -140,6 +140,24 @@ public class SeedDemoDataCommandHandler
         };
 
         // -------------------------------------------------
+        // Units
+        // -------------------------------------------------
+        var administrationUnit = new PropertyPro.Domain.Entities.Unit
+        { 
+            Code = "ADMIN", 
+            Name = "Administration", 
+            Description = "Administration department", 
+            Floor = floor1 
+        };
+
+        var itUnit = new PropertyPro.Domain.Entities.Unit
+        { Code = "IT", 
+            Name = "Information Technology", 
+            Description = "IT and infrastructure department", 
+            Floor = floor2 
+        };
+
+        // -------------------------------------------------
         // Rooms
         // -------------------------------------------------
 
@@ -151,7 +169,7 @@ public class SeedDemoDataCommandHandler
                 Name = "Reception",
                 RoomTypeId = officeRoomType.Id,
                 Capacity = 10,
-                Floor = floor1
+                Unit = administrationUnit
             },
 
             new Room
@@ -160,7 +178,7 @@ public class SeedDemoDataCommandHandler
                 Name = "Conference Room",
                 RoomTypeId = meetingRoomType.Id,
                 Capacity = 20,
-                Floor = floor1
+                Unit = administrationUnit
             },
 
             new Room
@@ -169,7 +187,7 @@ public class SeedDemoDataCommandHandler
                 Name = "IT Department",
                 RoomTypeId = officeRoomType.Id,
                 Capacity = 15,
-                Floor = floor2
+                Unit = itUnit
             },
 
             new Room
@@ -178,7 +196,7 @@ public class SeedDemoDataCommandHandler
                 Name = "Server Room",
                 RoomTypeId = serverRoomType.Id,
                 Capacity = 4,
-                Floor = floor2
+                Unit = itUnit
             }
         };
 

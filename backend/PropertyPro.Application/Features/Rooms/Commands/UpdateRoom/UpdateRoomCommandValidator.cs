@@ -11,9 +11,9 @@ public class UpdateRoomCommandValidator
         RuleFor(x => x.Id)
             .GreaterThan(0);
 
-        RuleFor(x => x.FloorId)
+        RuleFor(x => x.UnitId)
             .GreaterThan(0)
-            .WithMessage("Floor is required.");
+            .WithMessage("Unit is required.");
 
         RuleFor(x => x.RoomTypeId)
             .GreaterThan(0)

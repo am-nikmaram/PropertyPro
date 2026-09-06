@@ -5,7 +5,7 @@ namespace PropertyPro.Application.Features.Rooms.Commands.UpdateRoom;
 
 public record UpdateRoomCommand(
     int Id,
-    int FloorId,
+    int UnitId,
     int RoomTypeId,
     string RoomNumber,
     string Name,

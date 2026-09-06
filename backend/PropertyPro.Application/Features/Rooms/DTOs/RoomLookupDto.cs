@@ -2,7 +2,7 @@
 
 public record RoomLookupDto(
     int Id,
-    int FloorId,
+    int UnitId,
     int RoomTypeId,
     string RoomNumber,
     string Name);

@@ -355,6 +355,11 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MaintenanceNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<int>("MaintenanceType")
                         .HasColumnType("int");
 
@@ -383,6 +388,9 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AssetId");
+
+                    b.HasIndex("MaintenanceNumber")
+                        .IsUnique();
 
                     b.HasIndex("ScheduledDate");
 
@@ -461,9 +469,6 @@ namespace PropertyPro.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("FloorId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -480,6 +485,9 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.Property<int>("RoomTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -490,7 +498,7 @@ namespace PropertyPro.Infrastructure.Migrations
 
                     b.HasIndex("RoomTypeId");
 
-                    b.HasIndex("FloorId", "RoomNumber")
+                    b.HasIndex("UnitId", "RoomNumber")
                         .IsUnique();
 
                     b.ToTable("Rooms", (string)null);
@@ -534,6 +542,60 @@ namespace PropertyPro.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("RoomTypes", (string)null);
+                });
+
+            modelBuilder.Entity("PropertyPro.Domain.Entities.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("Area")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("FloorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("FloorId");
+
+                    b.ToTable("Units", (string)null);
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Asset", b =>
@@ -601,21 +663,32 @@ namespace PropertyPro.Infrastructure.Migrations
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Room", b =>
                 {
-                    b.HasOne("PropertyPro.Domain.Entities.Floor", "Floor")
-                        .WithMany("Rooms")
-                        .HasForeignKey("FloorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("PropertyPro.Domain.Entities.RoomType", "RoomType")
                         .WithMany("Rooms")
                         .HasForeignKey("RoomTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Floor");
+                    b.HasOne("PropertyPro.Domain.Entities.Unit", "Unit")
+                        .WithMany("Rooms")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("RoomType");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("PropertyPro.Domain.Entities.Unit", b =>
+                {
+                    b.HasOne("PropertyPro.Domain.Entities.Floor", "Floor")
+                        .WithMany("Units")
+                        .HasForeignKey("FloorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Floor");
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Asset", b =>
@@ -640,7 +713,7 @@ namespace PropertyPro.Infrastructure.Migrations
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Floor", b =>
                 {
-                    b.Navigation("Rooms");
+                    b.Navigation("Units");
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Organization", b =>
@@ -654,6 +727,11 @@ namespace PropertyPro.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.RoomType", b =>
+                {
+                    b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("PropertyPro.Domain.Entities.Unit", b =>
                 {
                     b.Navigation("Rooms");
                 });

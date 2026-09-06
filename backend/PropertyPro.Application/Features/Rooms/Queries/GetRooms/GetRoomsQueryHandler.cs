@@ -26,7 +26,7 @@ public class GetRoomsQueryHandler
         var query = _context.Rooms
             .AsNoTracking()
             .Where(x =>
-                x.FloorId == request.FloorId &&
+                x.UnitId == request.UnitId &&
                 x.IsActive);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
@@ -45,7 +45,7 @@ public class GetRoomsQueryHandler
             .OrderBy(x => x.RoomNumber)
             .Select(x => new RoomListDto(
                 x.Id,
-                x.FloorId,
+                x.UnitId,
                 x.RoomTypeId,
                 x.RoomType.Name,
                 x.RoomNumber,

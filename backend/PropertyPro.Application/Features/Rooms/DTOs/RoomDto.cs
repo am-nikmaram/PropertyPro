@@ -2,7 +2,7 @@
 
 public record RoomDto(
     int Id,
-    int FloorId,
+    int UnitId,
     int RoomTypeId,
     string RoomTypeName,
     string RoomNumber,

@@ -26,17 +26,17 @@ public class GetRoomLookupHandler
             .AsNoTracking()
             .Where(x => x.IsActive);
 
-        if (request.FloorId.HasValue)
+        if (request.UnitId.HasValue)
         {
             query = query.Where(x =>
-                x.FloorId == request.FloorId.Value);
+                x.UnitId == request.UnitId.Value);
         }
 
         return await query
             .OrderBy(x => x.RoomNumber)
             .Select(x => new RoomLookupDto(
                 x.Id,
-                x.FloorId,
+                x.UnitId,
                 x.RoomTypeId,
                 x.RoomNumber,
                 x.Name))

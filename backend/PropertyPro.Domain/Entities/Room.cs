@@ -5,7 +5,7 @@ namespace PropertyPro.Domain.Entities;
 
 public class Room : BaseEntity
 {
-    public int FloorId { get; set; }
+    public int UnitId { get; set; }
     public int RoomTypeId { get; set; }
 
     public string RoomNumber { get; set; } = null!;
@@ -18,7 +18,7 @@ public class Room : BaseEntity
 
     public int? Capacity { get; set; }
 
-    public Floor Floor { get; set; } = null!;
+    public Unit Unit { get; set; } = null!;
     public RoomType RoomType { get; set; } = null!;
 
     public ICollection<Asset> Assets { get; set; }

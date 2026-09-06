@@ -31,13 +31,13 @@ public class CreateRoomCommandHandler
 
         var floorExists = await _context.Floors
             .AnyAsync(
-                x => x.Id == request.FloorId &&
+                x => x.Id == request.UnitId &&
                      x.IsActive,
                 cancellationToken);
 
         if (!floorExists)
             throw new NotFoundException(
-                $"Floor with ID {request.FloorId} was not found.");
+                $"Floor with ID {request.UnitId} was not found.");
 
         var roomType = await _context.RoomTypes
             .FirstOrDefaultAsync(
@@ -51,7 +51,7 @@ public class CreateRoomCommandHandler
 
         var duplicateRoom = await _context.Rooms
             .AnyAsync(
-                x => x.FloorId == request.FloorId &&
+                x => x.UnitId == request.UnitId &&
                      x.RoomNumber == roomNumber &&
                      x.IsActive,
                 cancellationToken);
@@ -74,7 +74,7 @@ public class CreateRoomCommandHandler
 
         return new RoomDto(
             room.Id,
-            room.FloorId,
+            room.UnitId,
             room.RoomTypeId,
             roomType.Name,
             room.RoomNumber,

@@ -38,12 +38,12 @@ public class UpdateRoomCommandHandler
         // Validate Floor
         var floorExists = await _context.Floors
             .AnyAsync(
-                x => x.Id == request.FloorId && x.IsActive,
+                x => x.Id == request.UnitId && x.IsActive,
                 cancellationToken);
 
         if (!floorExists)
             throw new NotFoundException(
-                $"Floor with ID {request.FloorId} was not found.");
+                $"Floor with ID {request.UnitId} was not found.");
 
         // Validate Room Type
         var roomTypeExists = await _context.RoomTypes
@@ -60,7 +60,7 @@ public class UpdateRoomCommandHandler
             .AnyAsync(
                 x =>
                     x.Id != request.Id &&
-                    x.FloorId == request.FloorId &&
+                    x.UnitId == request.UnitId &&
                     x.RoomNumber == request.RoomNumber.Trim() &&
                     x.IsActive,
                 cancellationToken);
@@ -87,7 +87,7 @@ public class UpdateRoomCommandHandler
 
         return new RoomDto(
             room.Id,
-            room.FloorId,
+            room.UnitId,
             room.RoomTypeId,
             roomTypeName,
             room.RoomNumber,

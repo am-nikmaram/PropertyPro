@@ -32,9 +32,9 @@ public class RoomConfiguration
         builder.Property(x => x.Capacity)
             .IsRequired(false);
 
-        builder.HasOne(x => x.Floor)
+        builder.HasOne(x => x.Unit)
             .WithMany(x => x.Rooms)
-            .HasForeignKey(x => x.FloorId)
+            .HasForeignKey(x => x.UnitId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.RoomType)
@@ -44,7 +44,7 @@ public class RoomConfiguration
 
         builder.HasIndex(x => new
         {
-            x.FloorId,
+            x.UnitId,
             x.RoomNumber
         })
         .IsUnique();

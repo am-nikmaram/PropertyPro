@@ -32,7 +32,7 @@ public class FloorProfile : Profile
                 dest => dest.Building,
                 opt => opt.Ignore())
             .ForMember(
-                dest => dest.Rooms,
+                dest => dest.Units,
                 opt => opt.Ignore());
 
         CreateMap<UpdateFloorCommand, Floor>()
@@ -58,7 +58,7 @@ public class FloorProfile : Profile
                 dest => dest.Building,
                 opt => opt.Ignore())
             .ForMember(
-                dest => dest.Rooms,
+                dest => dest.Units,
                 opt => opt.Ignore());
     }
 }

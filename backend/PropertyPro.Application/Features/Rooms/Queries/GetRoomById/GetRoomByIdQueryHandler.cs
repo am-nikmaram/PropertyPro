@@ -27,7 +27,7 @@ public class GetRoomByIdQueryHandler
                 x.IsActive)
             .Select(x => new RoomDto(
                 x.Id,
-                x.FloorId,
+                x.UnitId,
                 x.RoomTypeId,
                 x.RoomType.Name,
                 x.RoomNumber,
