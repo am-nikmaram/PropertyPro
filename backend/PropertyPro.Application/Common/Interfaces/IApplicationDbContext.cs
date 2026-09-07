@@ -13,6 +13,7 @@ public interface IApplicationDbContext
     DbSet<Building> Buildings { get; }
 
     DbSet<Floor> Floors { get; }
+    DbSet<Unit> Units { get; }
 
     DbSet<Room> Rooms { get; }
     DbSet<RoomType> RoomTypes { get; }
