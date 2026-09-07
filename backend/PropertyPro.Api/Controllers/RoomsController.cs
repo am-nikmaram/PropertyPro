@@ -100,12 +100,12 @@ public class RoomsController : ControllerBase
 
 
 [HttpGet("lookup")]
-public async Task<IActionResult> GetLookup(
-    [FromQuery] int? floorId,
+public async Task<IActionResult> Lookup(
+    [FromQuery] GetRoomLookupQuery query,
     CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new GetRoomLookupQuery(floorId),
+            query,
             cancellationToken);
 
         return Ok(result);

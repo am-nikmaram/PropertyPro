@@ -26,24 +26,34 @@ public class UpdateRoomCommandHandler
         UpdateRoomCommand request,
         CancellationToken cancellationToken)
     {
+        //var room = await _context.Rooms
+        //    .FirstOrDefaultAsync(
+        //        x => x.Id == request.Id && x.IsActive,
+        //        cancellationToken);
+
+
         var room = await _context.Rooms
+            .Include(x => x.Unit)
+            .ThenInclude(x => x.Floor)
+            .Include(x => x.RoomType)
             .FirstOrDefaultAsync(
-                x => x.Id == request.Id && x.IsActive,
-                cancellationToken);
+            x => x.Id == request.Id && 
+            x.IsActive, 
+            cancellationToken);
 
         if (room is null)
             throw new NotFoundException(
                 $"Room with ID {request.Id} was not found.");
 
         // Validate Floor
-        var floorExists = await _context.Floors
-            .AnyAsync(
-                x => x.Id == request.UnitId && x.IsActive,
-                cancellationToken);
+        //var floorExists = await _context.Floors
+        //    .AnyAsync(
+        //        x => x.Id == request.UnitId && x.IsActive,
+        //        cancellationToken);
 
-        if (!floorExists)
-            throw new NotFoundException(
-                $"Floor with ID {request.UnitId} was not found.");
+        //if (!floorExists)
+        //    throw new NotFoundException(
+        //        $"Floor with ID {request.UnitId} was not found.");
 
         // Validate Room Type
         var roomTypeExists = await _context.RoomTypes
@@ -60,7 +70,7 @@ public class UpdateRoomCommandHandler
             .AnyAsync(
                 x =>
                     x.Id != request.Id &&
-                    x.UnitId == request.UnitId &&
+                    x.UnitId == room.UnitId &&
                     x.RoomNumber == request.RoomNumber.Trim() &&
                     x.IsActive,
                 cancellationToken);
@@ -88,6 +98,8 @@ public class UpdateRoomCommandHandler
         return new RoomDto(
             room.Id,
             room.UnitId,
+            room.Unit.FloorId,
+            room.Unit.Floor.BuildingId,
             room.RoomTypeId,
             roomTypeName,
             room.RoomNumber,

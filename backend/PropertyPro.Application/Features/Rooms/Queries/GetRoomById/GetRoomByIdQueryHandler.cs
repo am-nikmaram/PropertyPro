@@ -1,26 +1,27 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using PropertyPro.Application.Common.Exceptions;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Application.Features.Rooms.DTOs;
+using PropertyPro.Domain.Entities;
 
 namespace PropertyPro.Application.Features.Rooms.Queries.GetRoomById;
 
-public class GetRoomByIdQueryHandler
-    : IRequestHandler<GetRoomByIdQuery, RoomDto?>
+public class GetRoomByIdHandler
+    : IRequestHandler<GetRoomByIdQuery, RoomDto>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetRoomByIdQueryHandler(
-        IApplicationDbContext context)
+    public GetRoomByIdHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<RoomDto?> Handle(
+    public async Task<RoomDto> Handle(
         GetRoomByIdQuery request,
         CancellationToken cancellationToken)
     {
-        return await _context.Rooms
+        var room = await _context.Rooms
             .AsNoTracking()
             .Where(x =>
                 x.Id == request.Id &&
@@ -28,6 +29,8 @@ public class GetRoomByIdQueryHandler
             .Select(x => new RoomDto(
                 x.Id,
                 x.UnitId,
+                x.Unit.FloorId,
+                x.Unit.Floor.BuildingId,
                 x.RoomTypeId,
                 x.RoomType.Name,
                 x.RoomNumber,
@@ -37,5 +40,14 @@ public class GetRoomByIdQueryHandler
                 x.Capacity,
                 x.IsActive))
             .FirstOrDefaultAsync(cancellationToken);
+
+        if (room is null)
+        {
+            throw new NotFoundException(
+                nameof(Room),
+                request.Id);
+        }
+
+        return room;
     }
 }

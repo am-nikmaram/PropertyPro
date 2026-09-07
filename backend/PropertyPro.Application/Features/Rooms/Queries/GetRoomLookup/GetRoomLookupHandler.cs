@@ -12,8 +12,7 @@ public class GetRoomLookupHandler
 {
     private readonly IApplicationDbContext _context;
 
-    public GetRoomLookupHandler(
-        IApplicationDbContext context)
+    public GetRoomLookupHandler(IApplicationDbContext context)
     {
         _context = context;
     }
@@ -28,8 +27,21 @@ public class GetRoomLookupHandler
 
         if (request.UnitId.HasValue)
         {
-            query = query.Where(x =>
-                x.UnitId == request.UnitId.Value);
+            query = query.Where(
+                x => x.UnitId == request.UnitId.Value);
+        }
+
+        if (request.FloorId.HasValue)
+        {
+            query = query.Where(
+                x => x.Unit.FloorId == request.FloorId.Value);
+        }
+
+        if (request.BuildingId.HasValue)
+        {
+            query = query.Where(
+                x => x.Unit.Floor.BuildingId ==
+                     request.BuildingId.Value);
         }
 
         return await query

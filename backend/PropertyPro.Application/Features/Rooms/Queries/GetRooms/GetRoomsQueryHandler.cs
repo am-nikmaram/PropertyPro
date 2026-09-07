@@ -6,15 +6,12 @@ using PropertyPro.Application.Features.Rooms.DTOs;
 
 namespace PropertyPro.Application.Features.Rooms.Queries.GetRooms;
 
-public class GetRoomsQueryHandler
-    : IRequestHandler<
-        GetRoomsQuery,
-        PagedResult<RoomListDto>>
+public class GetRoomsHandler
+    : IRequestHandler<GetRoomsQuery, PagedResult<RoomListDto>>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetRoomsQueryHandler(
-        IApplicationDbContext context)
+    public GetRoomsHandler(IApplicationDbContext context)
     {
         _context = context;
     }
@@ -25,17 +22,53 @@ public class GetRoomsQueryHandler
     {
         var query = _context.Rooms
             .AsNoTracking()
-            .Where(x =>
-                x.UnitId == request.UnitId &&
-                x.IsActive);
+            .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
+        if (request.UnitId.HasValue)
         {
-            var search = request.Search.Trim();
+            query = query.Where(
+                x => x.UnitId == request.UnitId.Value);
+        }
 
-            query = query.Where(x =>
-                x.RoomNumber.Contains(search) ||
-                x.Name.Contains(search));
+        if (request.FloorId.HasValue)
+        {
+            query = query.Where(
+                x => x.Unit.FloorId == request.FloorId.Value);
+        }
+
+        if (request.BuildingId.HasValue)
+        {
+            query = query.Where(
+                x => x.Unit.Floor.BuildingId ==
+                     request.BuildingId.Value);
+        }
+
+        if (request.RoomTypeId.HasValue)
+        {
+            query = query.Where(
+                x => x.RoomTypeId == request.RoomTypeId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.RoomNumber))
+        {
+            var roomNumber = request.RoomNumber.Trim();
+
+            query = query.Where(
+                x => x.RoomNumber.Contains(roomNumber));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            var name = request.Name.Trim();
+
+            query = query.Where(
+                x => x.Name.Contains(name));
+        }
+
+        if (request.IsActive.HasValue)
+        {
+            query = query.Where(
+                x => x.IsActive == request.IsActive.Value);
         }
 
         var totalCount = await query.CountAsync(
@@ -43,6 +76,8 @@ public class GetRoomsQueryHandler
 
         var items = await query
             .OrderBy(x => x.RoomNumber)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(x => new RoomListDto(
                 x.Id,
                 x.UnitId,
@@ -53,9 +88,6 @@ public class GetRoomsQueryHandler
                 x.Area,
                 x.Capacity,
                 x.IsActive))
-            .Skip((request.PageNumber - 1) *
-                  request.PageSize)
-            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
         return new PagedResult<RoomListDto>

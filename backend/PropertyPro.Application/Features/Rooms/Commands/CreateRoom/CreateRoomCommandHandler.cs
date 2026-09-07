@@ -27,15 +27,36 @@ public class CreateRoomCommandHandler
         CreateRoomCommand request,
         CancellationToken cancellationToken)
     {
+
+
+        //var unit = await _context.Units
+        //    .AsNoTracking()
+        //    .Where(x =>
+        //    x.Id == request.UnitId &&
+        //    x.IsActive)
+        //    .Select(x => new
+        //    { x.Id,
+        //      x.FloorId,
+        //      FloorBuildingId = x.Floor.BuildingId 
+        //    }).FirstOrDefaultAsync(cancellationToken); 
+
+
+
         var roomNumber = request.RoomNumber.Trim().ToUpperInvariant();
 
-        var floorExists = await _context.Floors
-            .AnyAsync(
-                x => x.Id == request.UnitId &&
-                     x.IsActive,
-                cancellationToken);
+        var unit = await _context.Units
+            .AsNoTracking()
+            .Where(x =>
+            x.Id == request.UnitId &&
+            x.IsActive)
+            .Select(x => new
+            {
+                x.Id,
+                x.FloorId,
+                FloorBuildingId = x.Floor.BuildingId
+            }).FirstOrDefaultAsync(cancellationToken);
 
-        if (!floorExists)
+        if (unit is null)
             throw new NotFoundException(
                 $"Floor with ID {request.UnitId} was not found.");
 
@@ -75,6 +96,8 @@ public class CreateRoomCommandHandler
         return new RoomDto(
             room.Id,
             room.UnitId,
+            unit.FloorId, 
+            unit.FloorBuildingId,
             room.RoomTypeId,
             roomType.Name,
             room.RoomNumber,

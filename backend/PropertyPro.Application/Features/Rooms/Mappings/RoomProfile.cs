@@ -58,6 +58,9 @@ public class RoomProfile : Profile
                 dest => dest.IsActive,
                 opt => opt.Ignore())
             .ForMember(
+                dest => dest.UnitId,
+                opt => opt.Ignore())
+            .ForMember(
                 dest => dest.Unit,
                 opt => opt.Ignore())
             .ForMember(
