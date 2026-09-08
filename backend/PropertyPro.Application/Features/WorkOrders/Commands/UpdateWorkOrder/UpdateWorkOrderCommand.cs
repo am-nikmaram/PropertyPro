@@ -6,6 +6,8 @@ namespace PropertyPro.Application.Features.WorkOrders.Commands.UpdateWorkOrder;
 
 public record UpdateWorkOrderCommand(
     int Id,
+    int? TechnicianId,
+    int? VendorId,
     WorkOrderType WorkOrderType,
     WorkOrderPriority Priority,
     DateTime ScheduledDate,

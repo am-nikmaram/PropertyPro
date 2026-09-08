@@ -5,6 +5,7 @@ using PropertyPro.Application.Common.Exceptions;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Application.Features.WorkOrders.DTOs;
 using PropertyPro.Domain.Entities;
+using PropertyPro.Domain.Enums;
 
 namespace PropertyPro.Application.Features.WorkOrders.Commands.CreateWorkOrder;
 
@@ -36,8 +37,8 @@ public class CreateWorkOrderHandler
                 x.Id,
                 x.MaintenanceNumber,
                 x.AssetId,
-                x.Asset.AssetNumber,
-                x.Asset.Name
+                AssetNumber = x.Asset.AssetNumber,
+                AssetName = x.Asset.Name
             })
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -48,13 +49,53 @@ public class CreateWorkOrderHandler
                 request.MaintenanceRecordId);
         }
 
-        var workOrderNumber = await GenerateWorkOrderNumberAsync(
-            cancellationToken);
+        string? technicianName = null;
+
+        if (request.TechnicianId.HasValue)
+        {
+            technicianName = await _context.Technicians
+                .AsNoTracking()
+                .Where(x =>
+                    x.Id == request.TechnicianId.Value &&
+                    x.IsActive)
+                .Select(x => x.FirstName + " " + x.LastName)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (technicianName is null)
+            {
+                throw new NotFoundException(
+                    nameof(Technician),
+                    request.TechnicianId.Value);
+            }
+        }
+
+        string? vendorName = null;
+
+        if (request.VendorId.HasValue)
+        {
+            vendorName = await _context.Vendors
+                .AsNoTracking()
+                .Where(x =>
+                    x.Id == request.VendorId.Value &&
+                    x.IsActive)
+                .Select(x => x.Name)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (vendorName is null)
+            {
+                throw new NotFoundException(
+                    nameof(Vendor),
+                    request.VendorId.Value);
+            }
+        }
+
+        var workOrderNumber =
+            await GenerateWorkOrderNumberAsync(cancellationToken);
 
         var workOrder = _mapper.Map<WorkOrder>(request);
 
         workOrder.WorkOrderNumber = workOrderNumber;
-        workOrder.Status = Domain.Enums.WorkOrderStatus.Open;
+        workOrder.Status = WorkOrderStatus.Open;
         workOrder.IsActive = true;
 
         workOrder.Description =
@@ -78,7 +119,11 @@ public class CreateWorkOrderHandler
             maintenance.MaintenanceNumber,
             maintenance.AssetId,
             maintenance.AssetNumber,
-            maintenance.Name,
+            maintenance.AssetName,
+            workOrder.TechnicianId,
+            technicianName,
+            workOrder.VendorId,
+            vendorName,
             workOrder.WorkOrderType,
             workOrder.Priority,
             workOrder.Status,
@@ -109,7 +154,9 @@ public class CreateWorkOrderHandler
         var nextNumber = 1;
 
         if (lastNumber is not null &&
-            int.TryParse(lastNumber[prefix.Length..], out var currentNumber))
+            int.TryParse(
+                lastNumber[prefix.Length..],
+                out var currentNumber))
         {
             nextNumber = currentNumber + 1;
         }

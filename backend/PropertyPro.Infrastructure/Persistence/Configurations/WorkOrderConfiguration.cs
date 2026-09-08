@@ -51,5 +51,14 @@ public class WorkOrderConfiguration
             .WithMany(x => x.WorkOrders)
             .HasForeignKey(x => x.MaintenanceRecordId)
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Technician)
+            .WithMany(x => x.WorkOrders)
+            .HasForeignKey(x => x.TechnicianId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Vendor)
+            .WithMany(x => x.WorkOrders)
+            .HasForeignKey(x => x.VendorId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

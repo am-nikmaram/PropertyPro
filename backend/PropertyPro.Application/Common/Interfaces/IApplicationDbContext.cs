@@ -24,6 +24,10 @@ public interface IApplicationDbContext
 
     DbSet<MaintenanceRecord> MaintenanceRecords { get; }
 
+    DbSet<Technician> Technicians { get; }
+
+    DbSet<Vendor> Vendors { get; }
+
     DbSet<WorkOrder> WorkOrders { get; }
 
     Task<int> SaveChangesAsync(

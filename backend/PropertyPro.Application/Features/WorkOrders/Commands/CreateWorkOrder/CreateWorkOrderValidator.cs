@@ -9,6 +9,13 @@ public class CreateWorkOrderValidator
     {
         RuleFor(x => x.MaintenanceRecordId)
             .GreaterThan(0);
+        RuleFor(x => x.TechnicianId)
+            .GreaterThan(0)
+            .When(x => x.TechnicianId.HasValue);
+
+        RuleFor(x => x.VendorId)
+            .GreaterThan(0)
+            .When(x => x.VendorId.HasValue);
 
         RuleFor(x => x.WorkOrderType)
             .IsInEnum();

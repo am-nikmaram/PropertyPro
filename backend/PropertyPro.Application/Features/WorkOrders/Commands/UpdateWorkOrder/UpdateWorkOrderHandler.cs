@@ -5,16 +5,17 @@ using PropertyPro.Application.Common.Exceptions;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Application.Features.WorkOrders.DTOs;
 using PropertyPro.Domain.Entities;
+using PropertyPro.Domain.Enums;
 
 namespace PropertyPro.Application.Features.WorkOrders.Commands.UpdateWorkOrder;
 
-public class UpdateWorkOrderHandler
+public class UpdateWorkOrderCommandHandler
     : IRequestHandler<UpdateWorkOrderCommand, WorkOrderDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateWorkOrderHandler(
+    public UpdateWorkOrderCommandHandler(
         IApplicationDbContext context,
         IMapper mapper)
     {
@@ -40,25 +41,67 @@ public class UpdateWorkOrderHandler
                 request.Id);
         }
 
-        if (workOrder.Status is
-            Domain.Enums.WorkOrderStatus.Completed or
-            Domain.Enums.WorkOrderStatus.Cancelled)
+        if (workOrder.Status is WorkOrderStatus.Completed
+            or WorkOrderStatus.Cancelled)
         {
             throw new ConflictException(
                 "A completed or cancelled work order cannot be updated.");
         }
 
+        string? technicianName = null;
+
+        if (request.TechnicianId.HasValue)
+        {
+            var technician = await _context.Technicians
+                .Where(x =>
+                    x.Id == request.TechnicianId.Value &&
+                    x.IsActive)
+                .Select(x => new
+                {
+                    x.Id,
+                    Name = x.FirstName + " " + x.LastName
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (technician is null)
+            {
+                throw new NotFoundException(
+                    nameof(Technician),
+                    request.TechnicianId.Value);
+            }
+
+            technicianName = technician.Name;
+        }
+
+        string? vendorName = null;
+
+        if (request.VendorId.HasValue)
+        {
+            var vendor = await _context.Vendors
+                .Where(x =>
+                    x.Id == request.VendorId.Value &&
+                    x.IsActive)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (vendor is null)
+            {
+                throw new NotFoundException(
+                    nameof(Vendor),
+                    request.VendorId.Value);
+            }
+
+            vendorName = vendor.Name;
+        }
+
         _mapper.Map(request, workOrder);
 
-        workOrder.Description =
-            string.IsNullOrWhiteSpace(workOrder.Description)
-                ? null
-                : workOrder.Description.Trim();
-
-        workOrder.Notes =
-            string.IsNullOrWhiteSpace(workOrder.Notes)
-                ? null
-                : workOrder.Notes.Trim();
+        workOrder.Description = request.Description?.Trim();
+        workOrder.Notes = request.Notes?.Trim();
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -70,6 +113,10 @@ public class UpdateWorkOrderHandler
             workOrder.MaintenanceRecord.AssetId,
             workOrder.MaintenanceRecord.Asset.AssetNumber,
             workOrder.MaintenanceRecord.Asset.Name,
+            workOrder.TechnicianId,
+            technicianName,
+            workOrder.VendorId,
+            vendorName,
             workOrder.WorkOrderType,
             workOrder.Priority,
             workOrder.Status,

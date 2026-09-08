@@ -1,0 +1,124 @@
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Application.Features.WorkOrders.Commands.ChangeWorkOrderStatus;
+using PropertyPro.Application.Features.WorkOrders.Commands.CreateWorkOrder;
+using PropertyPro.Application.Features.WorkOrders.Commands.DeleteWorkOrder;
+using PropertyPro.Application.Features.WorkOrders.Commands.UpdateWorkOrder;
+using PropertyPro.Application.Features.WorkOrders.Queries.GetWorkOrderById;
+using PropertyPro.Application.Features.WorkOrders.Queries.GetWorkOrderLookup;
+using PropertyPro.Application.Features.WorkOrders.Queries.GetWorkOrders;
+
+namespace PropertyPro.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class WorkOrdersController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public WorkOrdersController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetWorkOrders(
+        [FromQuery] GetWorkOrdersQuery query,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            query,
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetWorkOrderById(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new GetWorkOrderByIdQuery(id),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpGet("lookup")]
+    public async Task<IActionResult> GetLookup(
+        [FromQuery] int? maintenanceRecordId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new GetWorkOrderLookupQuery(maintenanceRecordId),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(
+        [FromBody] CreateWorkOrderCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            command,
+            cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetWorkOrderById),
+            new { id = result.Id },
+            result);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(
+        int id,
+        [FromBody] UpdateWorkOrderCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest(
+                "The route id does not match the command id.");
+        }
+
+        var result = await _mediator.Send(
+            command,
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(
+            new DeleteWorkOrderCommand(id),
+            cancellationToken);
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id:int}/status")]
+    public async Task<IActionResult> ChangeStatus(
+        int id,
+        [FromBody] ChangeWorkOrderStatusCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest(
+                "The route id does not match the command id.");
+        }
+
+        var result = await _mediator.Send(
+            command,
+            cancellationToken);
+
+        return Ok(result);
+    }
+}

@@ -1,14 +1,23 @@
 ﻿using FluentValidation;
+using PropertyPro.Domain.Enums;
 
 namespace PropertyPro.Application.Features.WorkOrders.Commands.UpdateWorkOrder;
 
-public class UpdateWorkOrderValidator
+public class UpdateWorkOrderCommandValidator
     : AbstractValidator<UpdateWorkOrderCommand>
 {
-    public UpdateWorkOrderValidator()
+    public UpdateWorkOrderCommandValidator()
     {
         RuleFor(x => x.Id)
             .GreaterThan(0);
+
+        RuleFor(x => x.TechnicianId)
+            .GreaterThan(0)
+            .When(x => x.TechnicianId.HasValue);
+
+        RuleFor(x => x.VendorId)
+            .GreaterThan(0)
+            .When(x => x.VendorId.HasValue);
 
         RuleFor(x => x.WorkOrderType)
             .IsInEnum();

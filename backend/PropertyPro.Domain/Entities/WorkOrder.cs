@@ -29,5 +29,13 @@ public class WorkOrder : BaseEntity
 
     public string? Notes { get; set; }
 
+    public int? TechnicianId { get; set; }
+
+    public int? VendorId { get; set; }
+
+    public Technician? Technician { get; set; }
+
+    public Vendor? Vendor { get; set; }
+
     public MaintenanceRecord MaintenanceRecord { get; set; } = null!;
 }

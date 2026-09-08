@@ -6,6 +6,8 @@ namespace PropertyPro.Application.Features.WorkOrders.Commands.CreateWorkOrder;
 
 public record CreateWorkOrderCommand(
     int MaintenanceRecordId,
+    int? TechnicianId,
+    int? VendorId,
     WorkOrderType WorkOrderType,
     WorkOrderPriority Priority,
     DateTime ScheduledDate,

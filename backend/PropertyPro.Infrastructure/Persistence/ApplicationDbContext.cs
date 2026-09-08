@@ -30,6 +30,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; } = null!;
 
+    public DbSet<Technician> Technicians => Set<Technician>();
+
+    public DbSet<Vendor> Vendors => Set<Vendor>();
+
     public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
