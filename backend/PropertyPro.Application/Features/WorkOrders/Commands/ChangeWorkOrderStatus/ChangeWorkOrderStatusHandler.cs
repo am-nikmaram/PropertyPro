@@ -26,6 +26,8 @@ public class ChangeWorkOrderStatusHandler
         var workOrder = await _context.WorkOrders
             .Include(x => x.MaintenanceRecord)
                 .ThenInclude(x => x.Asset)
+            .Include(x => x.Technician)
+            .Include(x => x.Vendor)
             .FirstOrDefaultAsync(
                 x => x.Id == request.Id && x.IsActive,
                 cancellationToken);
@@ -69,6 +71,14 @@ public class ChangeWorkOrderStatusHandler
             workOrder.MaintenanceRecord.AssetId,
             workOrder.MaintenanceRecord.Asset.AssetNumber,
             workOrder.MaintenanceRecord.Asset.Name,
+            workOrder.TechnicianId,
+            workOrder.Technician == null
+                ? null
+                : workOrder.Technician.FirstName
+                    + " "
+                    + workOrder.Technician.LastName,
+            workOrder.VendorId,
+            workOrder.Vendor?.Name,
             workOrder.WorkOrderType,
             workOrder.Priority,
             workOrder.Status,
