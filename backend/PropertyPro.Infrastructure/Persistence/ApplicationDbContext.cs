@@ -27,7 +27,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<AssetCategory> AssetCategories => Set<AssetCategory>();
 
     public DbSet<Asset> Assets => Set<Asset>();
+
     public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; } = null!;
+
+    public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

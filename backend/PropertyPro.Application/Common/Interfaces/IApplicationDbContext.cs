@@ -21,7 +21,10 @@ public interface IApplicationDbContext
     DbSet<AssetCategory> AssetCategories { get; }
 
     DbSet<Asset> Assets { get; }
+
     DbSet<MaintenanceRecord> MaintenanceRecords { get; }
+
+    DbSet<WorkOrder> WorkOrders { get; }
 
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken);

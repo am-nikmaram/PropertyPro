@@ -28,4 +28,6 @@ public class MaintenanceRecord : BaseEntity
     public string? Notes { get; set; }
 
     public Asset Asset { get; set; } = null!;
+    public ICollection<WorkOrder> WorkOrders { get; set; }
+    = new List<WorkOrder>();
 }
