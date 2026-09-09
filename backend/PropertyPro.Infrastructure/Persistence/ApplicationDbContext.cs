@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Domain.Entities;
+using PropertyPro.Infrastructure.Identity;
 
 namespace PropertyPro.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options)

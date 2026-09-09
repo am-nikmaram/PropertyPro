@@ -1,9 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using PropertyPro.Application.Common.Interfaces;
+using PropertyPro.Infrastructure.Identity;
 using PropertyPro.Infrastructure.Persistence;
 using PropertyPro.Infrastructure.Persistence.Interceptors;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace PropertyPro.Infrastructure;
 
@@ -20,6 +25,59 @@ public static class DependencyInjection
 
         //});
 
+
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+
+        services.AddIdentityCore<ApplicationUser>(options => 
+        { 
+            options.User.RequireUniqueEmail = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15); 
+        })
+
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager().
+            AddDefaultTokenProviders();
+        services.AddScoped<IIdentityService, IdentityService>();
+        
+
+        var jwtOptions = configuration
+            .GetSection(JwtOptions.SectionName)
+            .Get<JwtOptions>() 
+            ?? throw new InvalidOperationException(
+                "JWT configuration is missing.");
+
+        var signingKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtOptions.SecretKey));
+
+        services.AddAuthentication(options =>
+           {
+               options.DefaultAuthenticateScheme =
+               JwtBearerDefaults.AuthenticationScheme;
+               options.DefaultChallengeScheme =
+               JwtBearerDefaults.AuthenticationScheme;
+           })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = signingKey,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+        services.AddAuthorization();
 
         services.AddDbContext<ApplicationDbContext>(
     (serviceProvider, options) =>
@@ -38,6 +96,9 @@ public static class DependencyInjection
          provider => provider.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped<DatabaseInitializer>();
+
+        
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }
