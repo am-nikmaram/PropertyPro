@@ -5,6 +5,6 @@ namespace PropertyPro.Application.Common.Interfaces;
 public interface ITokenService
 {
     Task<AuthResponseDto> CreateTokenAsync(
-        string userId,
-        CancellationToken cancellationToken);
+    string userId,
+    CancellationToken cancellationToken);
 }

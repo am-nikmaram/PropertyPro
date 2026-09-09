@@ -100,6 +100,17 @@ public static class DependencyInjection
         
         services.AddScoped<ITokenService, TokenService>();
 
+
+        services.Configure<RefreshTokenOptions>(
+            configuration.GetSection(
+        RefreshTokenOptions.SectionName));
+
+        services.AddScoped<
+            IRefreshTokenService,
+            RefreshTokenService>();
+
+
+
         return services;
     }
 }

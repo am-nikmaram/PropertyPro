@@ -7,8 +7,8 @@ public class CurrentUserService : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CurrentUserService(
-        IHttpContextAccessor httpContextAccessor)
+public CurrentUserService(
+    IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
@@ -18,8 +18,27 @@ public class CurrentUserService : ICurrentUserService
             .User
             .FindFirstValue(ClaimTypes.NameIdentifier);
 
-    public string? UserName =>
+    public string? Email =>
+        _httpContextAccessor.HttpContext?
+            .User
+            .FindFirstValue(ClaimTypes.Email);
+
+    public string? Name =>
         _httpContextAccessor.HttpContext?
             .User
             .FindFirstValue(ClaimTypes.Name);
+
+    public bool IsAuthenticated =>
+        _httpContextAccessor.HttpContext?
+            .User
+            .Identity?
+            .IsAuthenticated
+        ?? false;
+
+    public bool IsInRole(string role) =>
+        _httpContextAccessor.HttpContext?
+            .User
+            .IsInRole(role)
+        ?? false;
+
 }

@@ -3,6 +3,7 @@ using PropertyPro.Api.Services;
 using PropertyPro.Application;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Infrastructure;
+using PropertyPro.Infrastructure.Identity;
 using PropertyPro.Infrastructure.Persistence;
 using PropertyPro.Infrastructure.Persistence.Interceptors;
 
@@ -36,6 +37,13 @@ builder.Services.AddScoped<
 // builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.SeedRolesAsync(scope.ServiceProvider);
+}
+
+
 
 app.UseExceptionHandler();
 

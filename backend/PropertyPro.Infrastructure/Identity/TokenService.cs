@@ -1,24 +1,28 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Application.Features.Auth.DTOs;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace PropertyPro.Infrastructure.Identity;
 
 public class TokenService : ITokenService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IRefreshTokenService _refreshTokenService;
     private readonly JwtOptions _options;
 
-    public TokenService(
-        UserManager<ApplicationUser> userManager,
-        IOptions<JwtOptions> options)
+
+public TokenService(
+    UserManager<ApplicationUser> userManager,
+    IRefreshTokenService refreshTokenService,
+    IOptions<JwtOptions> options)
     {
         _userManager = userManager;
+        _refreshTokenService = refreshTokenService;
         _options = options.Value;
     }
 
@@ -37,15 +41,25 @@ public class TokenService : ITokenService
         var roles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, user.Id),
-            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.Email, user.Email ?? string.Empty),
-            new(
-                ClaimTypes.Name,
-                $"{user.FirstName} {user.LastName}".Trim())
-        };
+    {
+        new(JwtRegisteredClaimNames.Sub, user.Id),
+
+        new(
+            JwtRegisteredClaimNames.Email,
+            user.Email ?? string.Empty),
+
+        new(
+            ClaimTypes.NameIdentifier,
+            user.Id),
+
+        new(
+            ClaimTypes.Email,
+            user.Email ?? string.Empty),
+
+        new(
+            ClaimTypes.Name,
+            $"{user.FirstName} {user.LastName}".Trim())
+    };
 
         claims.AddRange(
             roles.Select(role =>
@@ -71,13 +85,20 @@ public class TokenService : ITokenService
         var tokenString = new JwtSecurityTokenHandler()
             .WriteToken(token);
 
+        var refreshToken = await _refreshTokenService.CreateAsync(
+            user.Id,
+            cancellationToken);
+
         return new AuthResponseDto(
             user.Id,
             user.Email ?? string.Empty,
             user.FirstName,
             user.LastName,
             tokenString,
+            refreshToken,
             expiresAt,
             roles.ToList());
     }
+
+
 }
