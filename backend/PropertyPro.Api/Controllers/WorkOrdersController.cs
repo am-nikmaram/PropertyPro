@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Features.WorkOrders.Commands.ChangeWorkOrderStatus;
 using PropertyPro.Application.Features.WorkOrders.Commands.CreateWorkOrder;
 using PropertyPro.Application.Features.WorkOrders.Commands.DeleteWorkOrder;
@@ -16,12 +18,14 @@ public class WorkOrdersController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    public WorkOrdersController(IMediator mediator)
+
+public WorkOrdersController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetWorkOrders(
         [FromQuery] GetWorkOrdersQuery query,
         CancellationToken cancellationToken)
@@ -34,6 +38,7 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetWorkOrderById(
         int id,
         CancellationToken cancellationToken)
@@ -46,6 +51,7 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetLookup(
         [FromQuery] int? maintenanceRecordId,
         CancellationToken cancellationToken)
@@ -58,6 +64,7 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> Create(
         [FromBody] CreateWorkOrderCommand command,
         CancellationToken cancellationToken)
@@ -73,6 +80,7 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> Update(
         int id,
         [FromBody] UpdateWorkOrderCommand command,
@@ -92,6 +100,7 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> Delete(
         int id,
         CancellationToken cancellationToken)
@@ -104,6 +113,7 @@ public class WorkOrdersController : ControllerBase
     }
 
     [HttpPatch("{id:int}/status")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceExecution)]
     public async Task<IActionResult> ChangeStatus(
         int id,
         [FromBody] ChangeWorkOrderStatusCommand command,
@@ -121,4 +131,6 @@ public class WorkOrdersController : ControllerBase
 
         return Ok(result);
     }
+
+
 }
