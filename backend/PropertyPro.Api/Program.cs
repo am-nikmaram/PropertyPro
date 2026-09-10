@@ -1,3 +1,4 @@
+using PropertyPro.Api.Authorization;
 using PropertyPro.Api.Middleware;
 using PropertyPro.Api.Services;
 using PropertyPro.Application;
@@ -17,6 +18,7 @@ builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(
     builder.Configuration);
+builder.Services.AddPropertyProAuthorization();
 
 builder.Services.AddExceptionHandler<
     GlobalExceptionHandler>();
@@ -67,9 +69,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseAuthentication();
 
-//app.UseAuthorization();
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

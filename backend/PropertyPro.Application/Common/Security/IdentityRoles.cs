@@ -1,4 +1,4 @@
-﻿namespace PropertyPro.Infrastructure.Identity;
+﻿namespace PropertyPro.Application.Common.Security;
 
 public static class IdentityRoles
 {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyPro.Application.Common.Security;
 
 namespace PropertyPro.Infrastructure.Identity;
 
