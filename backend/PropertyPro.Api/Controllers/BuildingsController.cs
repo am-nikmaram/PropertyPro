@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Buildings.Commands.CreateBuilding;
 using PropertyPro.Application.Features.Buildings.Commands.DeleteBuilding;
@@ -23,6 +25,7 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<
         ActionResult<PagedResult<BuildingListDto>>> GetAll(
         [FromQuery] GetBuildingsQuery query,
@@ -36,6 +39,7 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<ActionResult<BuildingDto>> GetById(
         int id,
         CancellationToken cancellationToken)
@@ -53,6 +57,7 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<BuildingDto>> Create(
         CreateBuildingCommand command,
         CancellationToken cancellationToken)
@@ -68,6 +73,7 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<BuildingDto>> Update(
     int id,
     UpdateBuildingCommand command,
@@ -87,6 +93,7 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Delete(
     int id,
     CancellationToken cancellationToken)
@@ -99,8 +106,9 @@ public class BuildingsController : ControllerBase
     }
 
 
-[HttpGet("lookup")]
-public async Task<IActionResult> GetLookup(
+    [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> GetLookup(
     [FromQuery] int? facilityId,
     CancellationToken cancellationToken)
     {

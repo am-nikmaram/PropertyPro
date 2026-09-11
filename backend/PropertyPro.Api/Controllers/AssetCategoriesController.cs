@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Features.AssetCategories.Commands.CreateAssetCategory;
 using PropertyPro.Application.Features.AssetCategories.Commands.DeleteAssetCategory;
 using PropertyPro.Application.Features.AssetCategories.Commands.UpdateAssetCategory;
@@ -21,6 +23,7 @@ public class AssetCategoriesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetAssetCategories(
         CancellationToken cancellationToken)
     {
@@ -32,6 +35,7 @@ public class AssetCategoriesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetAssetCategoryById(
         int id,
         CancellationToken cancellationToken)
@@ -44,6 +48,7 @@ public class AssetCategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> CreateAssetCategory(
         CreateAssetCategoryCommand command,
         CancellationToken cancellationToken)
@@ -59,6 +64,7 @@ public class AssetCategoriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> UpdateAssetCategory(
         int id,
         UpdateAssetCategoryCommand command,
@@ -76,6 +82,7 @@ public class AssetCategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> DeleteAssetCategory(
         int id,
         CancellationToken cancellationToken)
@@ -87,8 +94,9 @@ public class AssetCategoriesController : ControllerBase
         return NoContent();
     }
 
-[HttpGet("lookup")]
-public async Task<IActionResult> GetLookup(
+    [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> GetLookup(
     CancellationToken cancellationToken)
     {
         var result = await _sender.Send(

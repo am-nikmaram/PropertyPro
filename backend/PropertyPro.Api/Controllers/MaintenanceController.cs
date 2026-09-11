@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Features.Maintenance.Commands.CreateMaintenance;
 using PropertyPro.Application.Features.Maintenance.Commands.DeleteMaintenance;
 using PropertyPro.Application.Features.Maintenance.Commands.UpdateMaintenance;
@@ -22,6 +24,7 @@ public class MaintenanceController : ControllerBase
 
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> Create(
         CreateMaintenanceCommand command,
         CancellationToken cancellationToken)
@@ -39,6 +42,7 @@ public class MaintenanceController : ControllerBase
 
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> Update(
         int id,
         UpdateMaintenanceCommand command,
@@ -59,8 +63,9 @@ public class MaintenanceController : ControllerBase
 
 
   
-[HttpDelete("{id:int}")]
-public async Task<IActionResult> Delete(
+    [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
+    public async Task<IActionResult> Delete(
     int id,
     CancellationToken cancellationToken)
     {
@@ -71,8 +76,9 @@ public async Task<IActionResult> Delete(
         return NoContent();
     }
 
-[HttpGet("{id:int}")]
-public async Task<IActionResult> GetById(
+    [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> GetById(
     int id,
     CancellationToken cancellationToken)
     {
@@ -85,6 +91,7 @@ public async Task<IActionResult> GetById(
 
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetAll(
     [FromQuery] GetMaintenancesQuery query,
     CancellationToken cancellationToken)

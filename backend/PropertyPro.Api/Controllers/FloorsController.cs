@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Floors.Commands.CreateFloor;
 using PropertyPro.Application.Features.Floors.Commands.DeleteFloor;
@@ -23,6 +25,7 @@ public class FloorsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<
         ActionResult<PagedResult<FloorListDto>>> GetAll(
         [FromQuery] GetFloorsQuery query,
@@ -36,6 +39,7 @@ public class FloorsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<ActionResult<FloorDto>> GetById(
         int id,
         CancellationToken cancellationToken)
@@ -53,6 +57,7 @@ public class FloorsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<FloorDto>> Create(
         CreateFloorCommand command,
         CancellationToken cancellationToken)
@@ -68,6 +73,7 @@ public class FloorsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<FloorDto>> Update(
         int id,
         UpdateFloorCommand command,
@@ -87,6 +93,7 @@ public class FloorsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Delete(
         int id,
         CancellationToken cancellationToken)
@@ -98,8 +105,9 @@ public class FloorsController : ControllerBase
         return NoContent();
     }
 
-[HttpGet("lookup")]
-public async Task<IActionResult> GetLookup(
+    [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> GetLookup(
     [FromQuery] int? buildingId,
     CancellationToken cancellationToken)
     {

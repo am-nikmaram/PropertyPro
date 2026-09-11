@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Features.Units.Commands.CreateUnit;
 using PropertyPro.Application.Features.Units.Commands.DeleteUnit;
 using PropertyPro.Application.Features.Units.Commands.UpdateUnit;
@@ -21,6 +23,7 @@ public class UnitsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Create(
         CreateUnitCommand command,
         CancellationToken cancellationToken)
@@ -36,6 +39,7 @@ public class UnitsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetById(
         int id,
         CancellationToken cancellationToken)
@@ -48,6 +52,7 @@ public class UnitsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetAll(
         [FromQuery] GetUnitsQuery query,
         CancellationToken cancellationToken)
@@ -60,6 +65,7 @@ public class UnitsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Update(
         int id,
         UpdateUnitCommand command,
@@ -79,6 +85,7 @@ public class UnitsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Delete(
         int id,
         CancellationToken cancellationToken)
@@ -91,8 +98,9 @@ public class UnitsController : ControllerBase
     }
 
 
-[HttpGet("lookup")]
-public async Task<IActionResult> Lookup(
+    [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> Lookup(
     [FromQuery] GetUnitLookupQuery query,
     CancellationToken cancellationToken)
     {

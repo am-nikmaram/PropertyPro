@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Facilities.Commands.CreateFacility;
 using PropertyPro.Application.Features.Facilities.Commands.DeleteFacility;
@@ -23,6 +25,7 @@ public class FacilitiesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<ActionResult<PagedResult<FacilityListDto>>> GetAll(
         [FromQuery] GetFacilitiesQuery query,
         CancellationToken cancellationToken)
@@ -35,6 +38,7 @@ public class FacilitiesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<ActionResult<FacilityDto>> GetById(
         int id,
         CancellationToken cancellationToken)
@@ -52,6 +56,7 @@ public class FacilitiesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<FacilityDto>> Create(
     CreateFacilityCommand command,
     CancellationToken cancellationToken)
@@ -67,6 +72,7 @@ public class FacilitiesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<FacilityDto>> Update(
     int id,
     UpdateFacilityCommand command,
@@ -86,6 +92,7 @@ public class FacilitiesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Delete(
     int id,
     CancellationToken cancellationToken)
@@ -98,8 +105,9 @@ public class FacilitiesController : ControllerBase
     }
 
 
-[HttpGet("lookup")]
-public async Task<IActionResult> GetLookup(
+    [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> GetLookup(
     CancellationToken cancellationToken)
     {
         var result = await _sender.Send(

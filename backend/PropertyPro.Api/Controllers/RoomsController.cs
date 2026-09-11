@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Rooms.Commands.CreateRoom;
 using PropertyPro.Application.Features.Rooms.Commands.DeleteRoom;
@@ -23,6 +25,7 @@ public class RoomsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<
         ActionResult<PagedResult<RoomListDto>>> GetAll(
         [FromQuery] GetRoomsQuery query,
@@ -36,6 +39,7 @@ public class RoomsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<ActionResult<RoomDto>> GetById(
         int id,
         CancellationToken cancellationToken)
@@ -53,6 +57,7 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<RoomDto>> Create(
         CreateRoomCommand command,
         CancellationToken cancellationToken)
@@ -68,6 +73,7 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<ActionResult<RoomDto>> Update(
         int id,
         UpdateRoomCommand command,
@@ -87,6 +93,7 @@ public class RoomsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.FacilityManagement)]
     public async Task<IActionResult> Delete(
         int id,
         CancellationToken cancellationToken)
@@ -99,8 +106,9 @@ public class RoomsController : ControllerBase
     }
 
 
-[HttpGet("lookup")]
-public async Task<IActionResult> Lookup(
+    [HttpGet("lookup")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    public async Task<IActionResult> Lookup(
     [FromQuery] GetRoomLookupQuery query,
     CancellationToken cancellationToken)
     {

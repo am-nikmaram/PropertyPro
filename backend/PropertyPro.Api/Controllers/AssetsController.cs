@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PropertyPro.Api.Authorization;
 using PropertyPro.Application.Features.Assets.Commands.CreateAsset;
 using PropertyPro.Application.Features.Assets.Commands.DeleteAsset;
 using PropertyPro.Application.Features.Assets.Commands.UpdateAsset;
@@ -20,6 +22,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetAssets(
         [FromQuery] GetAssetsQuery query,
         CancellationToken cancellationToken)
@@ -32,6 +35,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetAssetById(
         int id,
         CancellationToken cancellationToken)
@@ -44,6 +48,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> CreateAsset(
         [FromBody] CreateAssetCommand command,
         CancellationToken cancellationToken)
@@ -59,6 +64,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> UpdateAsset(
         int id,
         [FromBody] UpdateAssetCommand command,
@@ -78,6 +84,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.MaintenanceManagement)]
     public async Task<IActionResult> DeleteAsset(
         int id,
         CancellationToken cancellationToken)
