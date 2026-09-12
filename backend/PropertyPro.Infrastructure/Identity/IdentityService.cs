@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Interfaces;
+using PropertyPro.Application.Common.Security;
 
 namespace PropertyPro.Infrastructure.Identity;
 
@@ -35,6 +36,9 @@ public class IdentityService : IIdentityService
         var result = await _userManager.CreateAsync(
             user,
             password);
+        var roleResult = await _userManager.AddToRoleAsync(
+    user,
+    IdentityRoles.Viewer);
 
         if (!result.Succeeded)
         {

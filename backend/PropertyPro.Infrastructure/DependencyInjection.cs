@@ -109,6 +109,10 @@ public static class DependencyInjection
             IRefreshTokenService,
             RefreshTokenService>();
 
+        services.AddScoped<
+            IUserManagementService,
+            UserManagementService>();
+
 
 
         return services;
