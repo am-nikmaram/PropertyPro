@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using PropertyPro.Application.Common.Exceptions;
 using PropertyPro.Application.Common.Interfaces;
+using PropertyPro.Application.Common.Security;
 
 namespace PropertyPro.Application.Features.Users.Commands.AssignRole;
 
@@ -19,7 +20,7 @@ public class AssignRoleCommandHandler
         AssignRoleCommand request,
         CancellationToken cancellationToken)
     {
-        var role = request.Role.Trim();
+        
 
         var existingUser =
             await _userManagementService.GetUserByIdAsync(
@@ -31,6 +32,7 @@ public class AssignRoleCommandHandler
             throw new NotFoundException(
                 $"User '{request.UserId}' was not found.");
         }
+        var role = IdentityRoles.Normalize(request.Role);
 
         await _userManagementService.AssignRoleAsync(
             request.UserId,

@@ -12,8 +12,8 @@ using PropertyPro.Infrastructure.Persistence;
 namespace PropertyPro.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260912044521_testApi")]
-    partial class testApi
+    [Migration("20260913094942_final")]
+    partial class final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

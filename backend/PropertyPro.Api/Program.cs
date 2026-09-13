@@ -40,16 +40,17 @@ builder.Services.AddScoped<
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
-
     await IdentitySeeder.SeedRolesAsync(
         scope.ServiceProvider);
 
-    await IdentitySeeder.SeedDevelopmentAdminAsync(
-        scope.ServiceProvider,
-        builder.Configuration);
+    if (app.Environment.IsDevelopment())
+    {
+        await IdentitySeeder.SeedDevelopmentAdminAsync(
+            scope.ServiceProvider,
+            builder.Configuration);
+    }
 }
 
 app.UseExceptionHandler();

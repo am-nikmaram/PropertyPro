@@ -20,7 +20,7 @@ public class RemoveRoleCommandHandler
         RemoveRoleCommand request,
         CancellationToken cancellationToken)
     {
-        var role = request.Role.Trim();
+        var role = IdentityRoles.Normalize(request.Role);
 
         var user =
             await _userManagementService.GetUserByIdAsync(
