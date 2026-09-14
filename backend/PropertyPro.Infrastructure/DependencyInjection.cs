@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +11,6 @@ using PropertyPro.Infrastructure.Identity;
 using PropertyPro.Infrastructure.Persistence;
 using PropertyPro.Infrastructure.Persistence.Interceptors;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace PropertyPro.Infrastructure;
 
@@ -76,8 +78,61 @@ public static class DependencyInjection
                     IssuerSigningKey = signingKey,
                     ClockSkew = TimeSpan.Zero
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+
+                        context.Response.StatusCode =
+                            StatusCodes.Status401Unauthorized;
+
+                        context.Response.ContentType =
+                            "application/problem+json";
+
+                        var problemDetails = new ProblemDetails
+                        {
+                            Status = StatusCodes.Status401Unauthorized,
+                            Title = "Unauthorized",
+                            Detail = "Authentication is required to access this resource.",
+                            Instance = context.HttpContext.Request.Path
+                        };
+
+                        problemDetails.Extensions["traceId"] =
+                            context.HttpContext.TraceIdentifier;
+
+                        await context.Response.WriteAsJsonAsync(
+                            problemDetails);
+                    },
+
+                    OnForbidden = async context =>
+                    {
+                        context.Response.StatusCode =
+                            StatusCodes.Status403Forbidden;
+
+                        context.Response.ContentType =
+                            "application/problem+json";
+
+                        var problemDetails = new ProblemDetails
+                        {
+                            Status = StatusCodes.Status403Forbidden,
+                            Title = "Forbidden",
+                            Detail = "You do not have permission to access this resource.",
+                            Instance = context.HttpContext.Request.Path
+                        };
+
+                        problemDetails.Extensions["traceId"] =
+                            context.HttpContext.TraceIdentifier;
+
+                        await context.Response.WriteAsJsonAsync(
+                            problemDetails);
+                    }
+
+
+                };
             });
-        services.AddAuthorization();
+        
 
         services.AddDbContext<ApplicationDbContext>(
     (serviceProvider, options) =>

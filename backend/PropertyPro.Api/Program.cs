@@ -1,4 +1,5 @@
 using PropertyPro.Api.Authorization;
+using PropertyPro.Api.Extensions;
 using PropertyPro.Api.Middleware;
 using PropertyPro.Api.Services;
 using PropertyPro.Application;
@@ -11,8 +12,8 @@ using PropertyPro.Infrastructure.Persistence.Interceptors;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddPropertyProSwagger();
 
 builder.Services.AddApplication();
 
@@ -40,6 +41,8 @@ builder.Services.AddScoped<
 
 var app = builder.Build();
 
+app.UsePropertyProSwagger();
+
 using (var scope = app.Services.CreateScope())
 {
     await IdentitySeeder.SeedRolesAsync(
@@ -64,14 +67,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    //   app.MapOpenApi();
-
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
 

@@ -12,6 +12,10 @@ using PropertyPro.Application.Features.WorkOrders.Queries.GetWorkOrders;
 
 namespace PropertyPro.Api.Controllers;
 
+/// <summary>
+/// Provides endpoints for managing maintenance work orders.
+/// </summary>
+
 [ApiController]
 [Route("api/[controller]")]
 public class WorkOrdersController : ControllerBase
@@ -24,6 +28,10 @@ public WorkOrdersController(IMediator mediator)
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Gets a paginated list of work orders.
+    /// </summary>
+    /// <returns>A paginated collection of work orders.</returns>
     [HttpGet]
     [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
     public async Task<IActionResult> GetWorkOrders(
@@ -37,8 +45,21 @@ public WorkOrdersController(IMediator mediator)
         return Ok(result);
     }
 
+
+    /// <summary>
+    /// Gets a work order by its identifier.
+    /// </summary>
+    /// <param name="id">The work order identifier.</param>
     [HttpGet("{id:int}")]
     [Authorize(Policy = AuthorizationPolicies.ReadOnly)]
+    [ProducesResponseType(
+    StatusCodes.Status200OK)]
+    [ProducesResponseType(
+    StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(
+    StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(
+    StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetWorkOrderById(
         int id,
         CancellationToken cancellationToken)

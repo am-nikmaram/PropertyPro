@@ -22,71 +22,90 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
         _logger.LogError(
             exception,
-            "An unhandled exception occurred.");
+            "Unhandled exception occurred.");
 
-        var statusCode = exception switch
+        var problemDetails = exception switch
         {
-            ValidationException =>
-                StatusCodes.Status400BadRequest,
+            ValidationException validationException =>
+                CreateValidationProblemDetails(
+                    httpContext,
+                    validationException),
 
-            NotFoundException =>
-                StatusCodes.Status404NotFound,
+            NotFoundException notFoundException =>
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = notFoundException.Message,
+                    Instance = httpContext.Request.Path
+                },
 
-            ConflictException =>
-                StatusCodes.Status409Conflict,
+            ConflictException conflictException =>
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = "Conflict",
+                    Detail = conflictException.Message,
+                    Instance = httpContext.Request.Path
+                },
 
-            UnauthorizedException =>
-                StatusCodes.Status401Unauthorized,
+            UnauthorizedException unauthorizedException =>
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status401Unauthorized,
+                    Title = "Unauthorized",
+                    Detail = unauthorizedException.Message,
+                    Instance = httpContext.Request.Path
+                },
 
             _ =>
-                StatusCodes.Status500InternalServerError
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "An unexpected error occurred.",
+                    Detail = "An unexpected error occurred while processing the request.",
+                    Instance = httpContext.Request.Path
+                }
         };
 
-        var problemDetails = new ProblemDetails
-        {
-            Status = statusCode,
+        problemDetails.Extensions["traceId"] =
+            httpContext.TraceIdentifier;
 
-            Title = exception switch
-            {
-                ValidationException =>
-                    "Validation Failed",
-
-                NotFoundException =>
-                    "Resource Not Found",
-
-                ConflictException =>
-                    "Conflict",
-
-                UnauthorizedException =>
-                    "Unauthorized",
-
-                _ =>
-                    "An unexpected error occurred."
-            },
-
-            Detail = statusCode == 500
-                ? "An unexpected error occurred."
-                : exception.Message
-        };
-
-        if (exception is ValidationException validationException)
-        {
-            problemDetails.Extensions["errors"] =
-                validationException.Errors
-                    .GroupBy(x => x.PropertyName)
-                    .ToDictionary(
-                        group => group.Key,
-                        group => group
-                            .Select(x => x.ErrorMessage)
-                            .ToArray());
-        }
-
-        httpContext.Response.StatusCode = statusCode;
+        httpContext.Response.StatusCode =
+            problemDetails.Status!.Value;
 
         await httpContext.Response.WriteAsJsonAsync(
             problemDetails,
             cancellationToken);
 
         return true;
+    }
+
+    private static ValidationProblemDetails
+        CreateValidationProblemDetails(
+            HttpContext httpContext,
+            ValidationException exception)
+    {
+        var errors = exception.Errors
+            .GroupBy(x => x.PropertyName)
+            .ToDictionary(
+                group => group.Key,
+                group => group
+                    .Select(x => x.ErrorMessage)
+                    .Distinct()
+                    .ToArray());
+
+        var problemDetails = new ValidationProblemDetails(errors)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Validation failed",
+            Detail = "One or more validation errors occurred.",
+            Instance = httpContext.Request.Path
+        };
+
+        problemDetails.Extensions["traceId"] =
+            httpContext.TraceIdentifier;
+
+        return problemDetails;
     }
 }
