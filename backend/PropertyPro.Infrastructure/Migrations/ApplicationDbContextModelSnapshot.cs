@@ -577,6 +577,72 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.ToTable("Organizations");
                 });
 
+            modelBuilder.Entity("PropertyPro.Domain.Entities.PreventiveMaintenancePlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("AutoGenerateWorkOrder")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("NextDueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PlanNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("NextDueDate");
+
+                    b.HasIndex("PlanNumber")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive", "NextDueDate");
+
+                    b.ToTable("PreventiveMaintenancePlans", (string)null);
+                });
+
             modelBuilder.Entity("PropertyPro.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -1194,6 +1260,17 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.Navigation("Asset");
                 });
 
+            modelBuilder.Entity("PropertyPro.Domain.Entities.PreventiveMaintenancePlan", b =>
+                {
+                    b.HasOne("PropertyPro.Domain.Entities.Asset", "Asset")
+                        .WithMany("PreventiveMaintenancePlans")
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+                });
+
             modelBuilder.Entity("PropertyPro.Domain.Entities.Room", b =>
                 {
                     b.HasOne("PropertyPro.Domain.Entities.RoomType", "RoomType")
@@ -1252,6 +1329,8 @@ namespace PropertyPro.Infrastructure.Migrations
             modelBuilder.Entity("PropertyPro.Domain.Entities.Asset", b =>
                 {
                     b.Navigation("MaintenanceRecords");
+
+                    b.Navigation("PreventiveMaintenancePlans");
                 });
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.AssetCategory", b =>

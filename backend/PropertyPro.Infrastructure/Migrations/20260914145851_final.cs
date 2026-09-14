@@ -516,6 +516,37 @@ namespace PropertyPro.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PreventiveMaintenancePlans",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlanNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    AssetId = table.Column<int>(type: "int", nullable: false),
+                    Frequency = table.Column<int>(type: "int", nullable: false),
+                    NextDueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    AutoGenerateWorkOrder = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PreventiveMaintenancePlans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PreventiveMaintenancePlans_Assets_AssetId",
+                        column: x => x.AssetId,
+                        principalTable: "Assets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WorkOrders",
                 columns: table => new
                 {
@@ -684,6 +715,27 @@ namespace PropertyPro.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PreventiveMaintenancePlans_AssetId",
+                table: "PreventiveMaintenancePlans",
+                column: "AssetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PreventiveMaintenancePlans_IsActive_NextDueDate",
+                table: "PreventiveMaintenancePlans",
+                columns: new[] { "IsActive", "NextDueDate" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PreventiveMaintenancePlans_NextDueDate",
+                table: "PreventiveMaintenancePlans",
+                column: "NextDueDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PreventiveMaintenancePlans_PlanNumber",
+                table: "PreventiveMaintenancePlans",
+                column: "PlanNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_ExpiresAt",
                 table: "RefreshTokens",
                 column: "ExpiresAt");
@@ -806,6 +858,9 @@ namespace PropertyPro.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "PreventiveMaintenancePlans");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
