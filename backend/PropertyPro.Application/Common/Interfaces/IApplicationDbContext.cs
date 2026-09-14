@@ -30,6 +30,8 @@ public interface IApplicationDbContext
 
     DbSet<WorkOrder> WorkOrders { get; }
 
+    DbSet<PreventiveMaintenancePlan> PreventiveMaintenancePlans { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken);
 }

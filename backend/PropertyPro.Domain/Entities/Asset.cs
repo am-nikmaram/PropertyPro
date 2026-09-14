@@ -39,4 +39,7 @@ public class Asset : BaseEntity
 
     public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
     = new List<MaintenanceRecord>();
+
+    public ICollection<PreventiveMaintenancePlan> PreventiveMaintenancePlans
+    { get; set; } = new List<PreventiveMaintenancePlan>();
 }
