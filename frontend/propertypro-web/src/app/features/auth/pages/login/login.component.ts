@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormField, FormRoot, email, form, maxLength, required } from '@angular/forms/signals';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -9,45 +10,43 @@ import { AuthApiService } from '../../data-access/auth-api.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, InputTextModule, PasswordModule, ButtonModule],
+  imports: [FormField, FormRoot, InputTextModule, PasswordModule, ButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  private readonly formBuilder = inject(FormBuilder);
   private readonly authApi = inject(AuthApiService);
   private readonly router = inject(Router);
 
-  readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly successMessage = signal<string | null>(null);
-  readonly form = this.formBuilder.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+  readonly loginModel = signal({ email: '', password: '' });
+  readonly loginForm = form(this.loginModel, (path) => {
+    required(path.email, { message: 'Work email is required.' });
+    email(path.email, { message: 'Enter a valid email address.' });
+    maxLength(path.email, 256, { message: 'Email must be 256 characters or fewer.' });
+    required(path.password, { message: 'Password is required.' });
+  }, {
+    submission: {
+      action: async (field) => {
+        this.errorMessage.set(null);
+        try {
+          await firstValueFrom(this.authApi.login(field().value()));
+          await this.router.navigateByUrl('/app');
+          return;
+        } catch (error) {
+          const message = this.getLoginError(error);
+          this.errorMessage.set(message);
+          return { kind: 'loginFailed', message };
+        }
+      },
+    },
   });
 
-  submit(): void {
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
+  private getLoginError(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse) || error.status === 0) {
+      return 'Could not reach PropertyPro. Check that the API is running and try again.';
     }
 
-    this.isSubmitting.set(true);
-    this.authApi.login(this.form.getRawValue()).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        void this.router.navigateByUrl('/app');
-      },
-      error: (error: HttpErrorResponse) => {
-        this.isSubmitting.set(false);
-        this.errorMessage.set(
-          error.status === 0
-            ? 'Could not reach PropertyPro. Check that the API is running and try again.'
-            : error.error?.detail ?? error.error?.message ?? 'The email or password is incorrect.',
-        );
-      },
-    });
+    return error.error?.detail ?? error.error?.message ?? 'The email or password is incorrect.';
   }
 }

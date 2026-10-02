@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
@@ -13,7 +13,7 @@ import { FacilityListItem } from '../../models/facility.models';
 
 @Component({
   selector: 'app-facility-list',
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, TableModule, TagModule],
+  imports: [ButtonModule, InputTextModule, TableModule, TagModule],
   templateUrl: './facility-list.component.html',
   styleUrl: './facility-list.component.scss',
 })
@@ -27,15 +27,19 @@ export class FacilityListComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly firstRow = signal(0);
   readonly pageSize = signal(10);
-  readonly searchControl = new FormControl('', { nonNullable: true });
+  readonly searchTerm = signal('');
 
   constructor() {
-    this.searchControl.valueChanges
-      .pipe(debounceTime(350), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+    toObservable(this.searchTerm)
+      .pipe(skip(1), debounceTime(350), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((search) => {
         this.firstRow.set(0);
         this.load(1, this.pageSize(), search.trim(), 'name', false);
       });
+  }
+
+  onSearch(event: Event): void {
+    this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
   onLazyLoad(event: TableLazyLoadEvent): void {
@@ -47,7 +51,7 @@ export class FacilityListComponent {
     this.load(
       Math.floor(first / rows) + 1,
       rows,
-      this.searchControl.value.trim(),
+      this.searchTerm().trim(),
       sortField,
       event.sortOrder === -1,
     );
@@ -57,7 +61,7 @@ export class FacilityListComponent {
     this.load(
       Math.floor(this.firstRow() / this.pageSize()) + 1,
       this.pageSize(),
-      this.searchControl.value.trim(),
+      this.searchTerm().trim(),
       'name',
       false,
     );

@@ -11,7 +11,7 @@
   <div class="content-card">
     <div class="card-toolbar">
       <div class="toolbar-title"><h2>Your facilities</h2><p>Locations connected to your PropertyPro workspace.</p></div>
-      <label class="search-box"><i class="pi pi-search" aria-hidden="true"></i><input pInputText [formControl]="searchControl" placeholder="Search facilities" aria-label="Search facilities" /></label>
+      <label class="search-box"><i class="pi pi-search" aria-hidden="true"></i><input pInputText [value]="searchTerm()" (input)="onSearch($event)" placeholder="Search facilities" aria-label="Search facilities" /></label>
     </div>
 
     @if (errorMessage(); as message) {

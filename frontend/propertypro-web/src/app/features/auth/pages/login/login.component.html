@@ -34,20 +34,20 @@
         <p>Enter your account details to continue.</p>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <form [formRoot]="loginForm">
         <div class="field-group">
           <label for="email">Work email</label>
-          <input pInputText id="email" type="email" formControlName="email" placeholder="you@company.com" autocomplete="username" />
-          @if (form.controls.email.touched && form.controls.email.invalid) {
-            <small class="field-error">Enter a valid email address.</small>
+          <input pInputText id="email" type="email" [formField]="loginForm.email" placeholder="you@company.com" autocomplete="username" />
+          @if (loginForm.email().touched() && loginForm.email().invalid()) {
+            <small class="field-error">{{ loginForm.email().errors()[0]?.message }}</small>
           }
         </div>
 
         <div class="field-group">
           <div class="label-row"><label for="password">Password</label><span class="password-hint">Keep it private</span></div>
-          <p-password inputId="password" formControlName="password" [feedback]="false" [toggleMask]="true" [fluid]="true" autocomplete="current-password" placeholder="Enter your password" />
-          @if (form.controls.password.touched && form.controls.password.invalid) {
-            <small class="field-error">Password is required.</small>
+          <p-password inputId="password" [formField]="loginForm.password" [feedback]="false" [toggleMask]="true" [fluid]="true" autocomplete="current-password" placeholder="Enter your password" />
+          @if (loginForm.password().touched() && loginForm.password().invalid()) {
+            <small class="field-error">{{ loginForm.password().errors()[0]?.message }}</small>
           }
         </div>
 
@@ -55,11 +55,7 @@
           <div class="form-error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i><span>{{ message }}</span></div>
         }
 
-        @if (successMessage(); as message) {
-          <div class="form-success" role="status"><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ message }}</span></div>
-        }
-
-        <p-button type="submit" label="Sign in" icon="pi pi-arrow-right" iconPos="right" [loading]="isSubmitting()" [disabled]="isSubmitting()" styleClass="submit-button" />
+        <p-button type="submit" label="Sign in" icon="pi pi-arrow-right" iconPos="right" [loading]="loginForm().submitting()" [disabled]="loginForm().submitting()" styleClass="submit-button" />
       </form>
 
       <div class="form-note"><i class="pi pi-shield" aria-hidden="true"></i><span>Your account is protected with secure authentication.</span></div>
