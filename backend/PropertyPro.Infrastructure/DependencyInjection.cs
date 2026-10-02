@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Minio;
 using PropertyPro.Application.Common.Interfaces;
+using PropertyPro.Infrastructure.FileStorage;
 using PropertyPro.Infrastructure.Identity;
 using PropertyPro.Infrastructure.Persistence;
 using PropertyPro.Infrastructure.Persistence.Interceptors;
@@ -169,7 +171,31 @@ public static class DependencyInjection
             UserManagementService>();
 
 
+        #region RegisterMinio
+        services.Configure<MinioOptions>(
+    configuration.GetSection(
+        MinioOptions.SectionName));
 
+        services.AddSingleton<IMinioClient>(serviceProvider =>
+        {
+            var options =
+                serviceProvider
+                    .GetRequiredService<
+                        Microsoft.Extensions.Options.IOptions<MinioOptions>>()
+                    .Value;
+
+            return new MinioClient()
+                .WithEndpoint(options.Endpoint)
+                .WithCredentials(
+                    options.AccessKey,
+                    options.SecretKey)
+                .WithSSL(options.UseSsl)
+                .Build();
+        });
+
+        services.AddScoped<IFileStorageService,
+            MinioFileStorageService>();
+        #endregion
         return services;
     }
 }
