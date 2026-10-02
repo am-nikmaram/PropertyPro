@@ -1,0 +1,57 @@
+<section class="facilities-page">
+  <div class="page-heading">
+    <div>
+      <div class="page-eyebrow"><span></span> PROPERTY PORTFOLIO</div>
+      <h1>Facilities</h1>
+      <p>Manage the places and properties behind your operations.</p>
+    </div>
+    <div class="portfolio-count"><span class="count-icon"><i class="pi pi-building" aria-hidden="true"></i></span><span><strong>{{ totalRecords() }}</strong><small>facilities in portfolio</small></span></div>
+  </div>
+
+  <div class="content-card">
+    <div class="card-toolbar">
+      <div class="toolbar-title"><h2>Your facilities</h2><p>Locations connected to your PropertyPro workspace.</p></div>
+      <label class="search-box"><i class="pi pi-search" aria-hidden="true"></i><input pInputText [formControl]="searchControl" placeholder="Search facilities" aria-label="Search facilities" /></label>
+    </div>
+
+    @if (errorMessage(); as message) {
+      <div class="load-error" role="alert"><span><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ message }}</span><p-button label="Retry" icon="pi pi-refresh" [outlined]="true" size="small" (onClick)="retry()" /></div>
+    }
+
+    <p-table
+      [value]="facilities()"
+      [lazy]="true"
+      (onLazyLoad)="onLazyLoad($event)"
+      [paginator]="true"
+      [rows]="pageSize()"
+      [first]="firstRow()"
+      [totalRecords]="totalRecords()"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      [loading]="isLoading()"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} facilities"
+      sortField="name"
+      [sortOrder]="1"
+      dataKey="id"
+      stripedRows
+      styleClass="facility-table"
+    >
+      <ng-template #header>
+        <tr><th pSortableColumn="name">FACILITY <p-sort-icon field="name" /></th><th pSortableColumn="code">CODE <p-sort-icon field="code" /></th><th pSortableColumn="city">LOCATION <p-sort-icon field="city" /></th><th>STATUS</th></tr>
+      </ng-template>
+      <ng-template #body let-facility>
+        <tr>
+          <td><div class="facility-name"><span class="facility-symbol"><i class="pi pi-building" aria-hidden="true"></i></span><strong>{{ facility.name }}</strong></div></td>
+          <td><span class="facility-code">{{ facility.code }}</span></td>
+          <td><span class="location-cell"><i class="pi pi-map-marker" aria-hidden="true"></i>{{ facility.city || '—' }}<span class="country">{{ facility.country }}</span></span></td>
+          <td><p-tag [value]="facility.isActive ? 'Active' : 'Inactive'" [severity]="facility.isActive ? 'success' : 'secondary'" [rounded]="true" /></td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr><td colspan="4"><div class="empty-state"><span><i class="pi pi-search" aria-hidden="true"></i></span><strong>No facilities found</strong><p>Try a different search to find a matching facility.</p></div></td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="page-footnote"><i class="pi pi-info-circle" aria-hidden="true"></i><span>Facility access follows your assigned PropertyPro role.</span></div>
+</section>

@@ -1,0 +1,70 @@
+<main class="login-page">
+  <section class="brand-panel" aria-label="PropertyPro introduction">
+    <div class="brand-lockup">
+      <span class="brand-mark"><i class="pi pi-building" aria-hidden="true"></i></span>
+      <span>Property<span class="brand-light">Pro</span></span>
+    </div>
+
+    <div class="brand-copy">
+      <span class="eyebrow">PROPERTY OPERATIONS, IN SYNC</span>
+      <h1>Every property.<br />One clear picture.</h1>
+      <p>Bring your facilities, assets, and maintenance work into one calm, connected workspace.</p>
+    </div>
+
+    <div class="property-card" aria-hidden="true">
+      <div class="property-card-top">
+        <span class="property-symbol"><i class="pi pi-home"></i></span>
+        <span class="property-status"><span></span> All systems ready</span>
+      </div>
+      <div class="property-card-lines"><span></span><span></span><span></span></div>
+      <div class="property-card-bottom"><span>PORTFOLIO OVERVIEW</span><span><i class="pi pi-arrow-up-right"></i></span></div>
+    </div>
+
+    <div class="brand-footer"><span>PROPERTY MANAGEMENT, MADE CLEAR</span><span>01 — 03</span></div>
+  </section>
+
+  <section class="form-panel">
+    <div class="form-topline"><span>WELCOME BACK</span><span class="secure-label"><i class="pi pi-lock" aria-hidden="true"></i> SECURE SIGN IN</span></div>
+
+    <div class="login-card">
+      <div class="mobile-brand"><span class="brand-mark"><i class="pi pi-building" aria-hidden="true"></i></span> PropertyPro</div>
+      <div class="heading-block">
+        <span class="section-kicker">YOUR WORKSPACE AWAITS</span>
+        <h2>Sign in to PropertyPro</h2>
+        <p>Enter your account details to continue.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field-group">
+          <label for="email">Work email</label>
+          <input pInputText id="email" type="email" formControlName="email" placeholder="you@company.com" autocomplete="username" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <small class="field-error">Enter a valid email address.</small>
+          }
+        </div>
+
+        <div class="field-group">
+          <div class="label-row"><label for="password">Password</label><span class="password-hint">Keep it private</span></div>
+          <p-password inputId="password" formControlName="password" [feedback]="false" [toggleMask]="true" [fluid]="true" autocomplete="current-password" placeholder="Enter your password" />
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <small class="field-error">Password is required.</small>
+          }
+        </div>
+
+        @if (errorMessage(); as message) {
+          <div class="form-error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i><span>{{ message }}</span></div>
+        }
+
+        @if (successMessage(); as message) {
+          <div class="form-success" role="status"><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ message }}</span></div>
+        }
+
+        <p-button type="submit" label="Sign in" icon="pi pi-arrow-right" iconPos="right" [loading]="isSubmitting()" [disabled]="isSubmitting()" styleClass="submit-button" />
+      </form>
+
+      <div class="form-note"><i class="pi pi-shield" aria-hidden="true"></i><span>Your account is protected with secure authentication.</span></div>
+    </div>
+
+    <div class="form-footer"><span>© 2026 PropertyPro</span><span>Need access? Contact your administrator.</span></div>
+  </section>
+</main>

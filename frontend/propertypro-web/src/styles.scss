@@ -1,0 +1,22 @@
+@import 'primeicons/primeicons.css';
+
+:root {
+  color-scheme: light;
+  font-family: Inter, 'Segoe UI', sans-serif;
+  background: #f4f7fb;
+  color: #172b4d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f4f7fb;
+}

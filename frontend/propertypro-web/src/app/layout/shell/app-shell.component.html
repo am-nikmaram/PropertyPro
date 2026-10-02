@@ -1,0 +1,53 @@
+<div class="shell">
+  @if (isSidebarOpen()) {
+    <button class="sidebar-backdrop" type="button" aria-label="Close navigation" (click)="closeSidebar()"></button>
+  }
+
+  <aside class="sidebar" [class.sidebar-open]="isSidebarOpen()">
+    <a class="brand" routerLink="/app/facilities" (click)="closeSidebar()">
+      <span class="brand-mark"><i class="pi pi-building" aria-hidden="true"></i></span>
+      <span>Property<span class="brand-light">Pro</span></span>
+    </a>
+
+    <div class="workspace-switcher">
+      <span class="workspace-icon"><i class="pi pi-th-large" aria-hidden="true"></i></span>
+      <span class="workspace-copy"><small>WORKSPACE</small><strong>Portfolio operations</strong></span>
+      <i class="pi pi-angle-down switcher-caret" aria-hidden="true"></i>
+    </div>
+
+    <nav class="primary-nav" aria-label="Main navigation">
+      <span class="nav-caption">MANAGE</span>
+      <a class="nav-link" routerLink="/app/facilities" routerLinkActive="nav-active" (click)="closeSidebar()">
+        <i class="pi pi-building" aria-hidden="true"></i><span>Facilities</span><span class="nav-indicator"></span>
+      </a>
+      <a class="nav-link nav-disabled" aria-disabled="true"><i class="pi pi-box" aria-hidden="true"></i><span>Assets</span><small>SOON</small></a>
+      <a class="nav-link nav-disabled" aria-disabled="true"><i class="pi pi-wrench" aria-hidden="true"></i><span>Maintenance</span><small>SOON</small></a>
+      <a class="nav-link nav-disabled" aria-disabled="true"><i class="pi pi-clipboard" aria-hidden="true"></i><span>Work orders</span><small>SOON</small></a>
+
+      <span class="nav-caption secondary-caption">DIRECTORY</span>
+      <a class="nav-link nav-disabled" aria-disabled="true"><i class="pi pi-users" aria-hidden="true"></i><span>Technicians</span><small>SOON</small></a>
+      <a class="nav-link nav-disabled" aria-disabled="true"><i class="pi pi-truck" aria-hidden="true"></i><span>Vendors</span><small>SOON</small></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="support-card"><span class="support-icon"><i class="pi pi-sparkles" aria-hidden="true"></i></span><strong>Need a hand?</strong><p>Your operations, all in one place.</p></div>
+      <div class="sidebar-profile">
+        <p-avatar [label]="initials()" shape="circle" styleClass="profile-avatar" />
+        <span class="profile-copy"><strong>{{ userName() }}</strong><small>{{ user()?.roles?.[0] ?? 'Team member' }}</small></span>
+        <p-button icon="pi pi-sign-out" [text]="true" [rounded]="true" severity="secondary" aria-label="Sign out" (onClick)="logout()" styleClass="logout-button" />
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-start">
+        <p-button icon="pi pi-bars" [text]="true" [rounded]="true" severity="secondary" aria-label="Open navigation" styleClass="menu-button" (onClick)="isSidebarOpen.set(true)" />
+        <div class="breadcrumb"><span>PropertyPro</span><i class="pi pi-angle-right" aria-hidden="true"></i><strong>Facilities</strong></div>
+      </div>
+      <div class="topbar-end"><span class="environment-label"><span></span> OPERATIONS</span><span class="topbar-divider"></span><span class="user-greeting">{{ user()?.firstName ?? 'Welcome' }}</span><p-avatar [label]="initials()" shape="circle" styleClass="top-avatar" /></div>
+    </header>
+
+    <main class="page-content"><router-outlet /></main>
+  </div>
+</div>

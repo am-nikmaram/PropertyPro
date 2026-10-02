@@ -1,0 +1,61 @@
+.facilities-page { display: grid; gap: 23px; }
+.page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 2px 1px 3px; }
+.page-eyebrow { display: flex; align-items: center; gap: 7px; color: #7f91a2; font-size: 9px; font-weight: 700; letter-spacing: .13em; }
+.page-eyebrow span { width: 6px; height: 6px; border-radius: 50%; background: #4bb08d; box-shadow: 0 0 0 3px #e3f3ed; }
+.page-heading h1 { margin: 10px 0 5px; color: #18314b; font-size: clamp(28px, 3vw, 34px); font-weight: 650; letter-spacing: -.05em; }
+.page-heading p { margin: 0; color: #8290a0; font-size: 12px; }
+.portfolio-count { display: flex; min-width: 178px; align-items: center; gap: 11px; padding: 12px 15px; border: 1px solid #e4ebef; border-radius: 12px; background: rgba(255,255,255,.82); }
+.count-icon { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 10px; color: #398d76; background: #e9f5f0; font-size: 13px; }
+.portfolio-count > span:last-child { display: grid; gap: 3px; }
+.portfolio-count strong { color: #27435c; font-size: 16px; line-height: 1; }
+.portfolio-count small { color: #8a99a8; font-size: 9px; }
+.content-card { overflow: hidden; border: 1px solid #e7edf2; border-radius: 13px; background: #fff; box-shadow: 0 8px 24px rgba(32,61,88,.035); }
+.card-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 19px 22px 17px; }
+.toolbar-title h2 { margin: 0; color: #284159; font-size: 13px; font-weight: 650; }
+.toolbar-title p { margin: 5px 0 0; color: #98a4af; font-size: 10px; }
+.search-box { display: flex; width: min(100%, 240px); height: 36px; align-items: center; gap: 9px; padding: 0 10px; border: 1px solid #e2e9ef; border-radius: 8px; color: #94a1af; background: #fff; }
+.search-box > i { font-size: 11px; }
+.search-box input { width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; box-shadow: none; color: #40566b; background: transparent; font-size: 10px; }
+.search-box input::placeholder { color: #a3afba; }
+:host ::ng-deep .facility-table .p-datatable-table-container { overflow-x: auto; }
+:host ::ng-deep .facility-table .p-datatable-thead > tr > th { padding: 12px 18px; border-color: #edf1f4; color: #8d9aa8; background: #f9fbfc; font-size: 8px; font-weight: 700; letter-spacing: .1em; white-space: nowrap; }
+:host ::ng-deep .facility-table .p-datatable-tbody > tr > td { padding: 13px 18px; border-color: #eff2f5; color: #4b6176; font-size: 11px; white-space: nowrap; }
+:host ::ng-deep .facility-table .p-datatable-tbody > tr { transition: background .15s ease; }
+:host ::ng-deep .facility-table .p-datatable-tbody > tr:hover { background: #f8fbfa; }
+:host ::ng-deep .facility-table .p-paginator { justify-content: flex-end; gap: 3px; padding: 11px 17px; border: 0; border-top: 1px solid #edf1f4; color: #8a98a6; font-size: 9px; }
+:host ::ng-deep .facility-table .p-paginator-current { margin-right: auto; color: #8a98a6; font-size: 9px; }
+:host ::ng-deep .facility-table .p-paginator-page, :host ::ng-deep .facility-table .p-paginator-next, :host ::ng-deep .facility-table .p-paginator-prev { min-width: 27px; height: 27px; border-radius: 7px; font-size: 10px; }
+:host ::ng-deep .facility-table .p-paginator-page.p-paginator-page-selected { color: #28775f; background: #e8f5ef; }
+:host ::ng-deep .facility-table .p-tag { padding: 4px 8px; font-size: 9px; font-weight: 600; }
+.facility-name { display: flex; align-items: center; gap: 10px; }
+.facility-name strong { color: #304b64; font-size: 11px; font-weight: 600; }
+.facility-symbol { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #e7efee; border-radius: 9px; color: #4b9880; background: #f0f7f4; font-size: 11px; }
+.facility-code { padding: 4px 7px; border: 1px solid #e8edf1; border-radius: 5px; color: #708195; background: #f8fafb; font-family: 'Cascadia Code', Consolas, monospace; font-size: 9px; }
+.location-cell { display: inline-flex; align-items: center; gap: 6px; color: #596f83; }
+.location-cell i { color: #95a5b2; font-size: 10px; }
+.country { margin-left: 4px; color: #9aa7b3; }
+.actions-heading, .actions-cell { width: 70px; text-align: center; }
+.row-action { display: inline-grid; width: 27px; height: 27px; place-items: center; border: 1px solid transparent; border-radius: 7px; color: #8b9ba8; background: transparent; cursor: pointer; }
+.row-action:hover { border-color: #e5edea; color: #35876f; background: #f0f7f4; }
+.row-action i { font-size: 11px; }
+.empty-state { display: grid; justify-items: center; gap: 7px; padding: 30px 12px; text-align: center; }
+.empty-state > span { display: grid; width: 38px; height: 38px; margin-bottom: 3px; place-items: center; border-radius: 11px; color: #79978a; background: #eff6f2; }
+.empty-state strong { color: #425a70; font-size: 11px; }
+.empty-state p { margin: 0; color: #95a2ae; font-size: 10px; }
+.load-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 20px 15px; padding: 10px 12px; border: 1px solid #f0d8d9; border-radius: 8px; color: #9e4c51; background: #fff8f7; font-size: 10px; }
+.load-error > span { display: flex; align-items: center; gap: 8px; }
+.page-footnote { display: flex; align-items: center; gap: 7px; padding: 0 2px; color: #9aa6b1; font-size: 9px; }
+.page-footnote i { color: #83a494; font-size: 11px; }
+
+@media (max-width: 640px) {
+  .page-heading { align-items: flex-start; flex-direction: column; }
+  .portfolio-count { min-width: 0; padding: 9px 12px; }
+  .count-icon { width: 30px; height: 30px; }
+  .card-toolbar { align-items: stretch; flex-direction: column; padding: 17px 15px 14px; }
+  .search-box { width: 100%; }
+  :host ::ng-deep .facility-table .p-datatable-thead > tr > th,
+  :host ::ng-deep .facility-table .p-datatable-tbody > tr > td { padding-inline: 11px; }
+  :host ::ng-deep .facility-table .p-paginator { flex-wrap: wrap; justify-content: center; }
+  :host ::ng-deep .facility-table .p-paginator-current { width: 100%; margin: 0 0 5px; text-align: center; }
+  .load-error { align-items: flex-start; flex-direction: column; margin-inline: 12px; }
+}
