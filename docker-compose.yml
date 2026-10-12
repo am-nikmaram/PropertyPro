@@ -1,14 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-minio:
-  image: minio/minio:latest
-  container_name: propertypro-minio
-  restart: unless-stopped
-  ports:
-    - "9000:9000"
-    - "9001:9001"
-  environment:
-    MINIO_ROOT_USER: propertypro
-    MINIO_ROOT_PASSWORD: propertypro-dev-password
-  volumes:
-    - minio_data:/data
-  command: server /data --console-address ":9001"
+services:
+  # Keep your existing services here.
+
+  minio:
+    image: minio/minio:latest
+    container_name: propertypro-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: propertypro
+      MINIO_ROOT_PASSWORD: propertypro-dev-password
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  minio_data:
