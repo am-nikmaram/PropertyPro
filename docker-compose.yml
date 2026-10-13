@@ -1,19 +1,34 @@
-services:
-  # Keep your existing services here.
 
-  minio:
-    image: minio/minio:latest
-    container_name: propertypro-minio
+services:
+  # sqlserver:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   container_name: propertypro-sqlserver
+  #   restart: unless-stopped
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_PID: Developer
+  #     MSSQL_SA_PASSWORD: "Your_Strong_Dev_Password_123!"
+  #   ports:
+  #     - "1433:1433"
+  #   volumes:
+  #     - sqlserver_data:/var/opt/mssql
+
+  aistor:
+    image: quay.io/minio/aistor/minio:latest
+    container_name: propertypro-aistor
     restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: propertypro
+      MINIO_ROOT_PASSWORD: "propertypro-dev-password"
     ports:
       - "9000:9000"
       - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: propertypro
-      MINIO_ROOT_PASSWORD: propertypro-dev-password
     volumes:
-      - minio_data:/data
-    command: server /data --console-address ":9001"
+      - aistor_data:/mnt/data
+      - ./minio.license:/minio.license:ro
+    command: server /mnt/data --console-address ":9001" --license /minio.license
 
 volumes:
-  minio_data:
+  # sqlserver_data:
+  aistor_data:
+
