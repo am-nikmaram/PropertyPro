@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Minio;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Infrastructure.FileStorage;
 using PropertyPro.Infrastructure.Identity;
 using PropertyPro.Infrastructure.Persistence;
 using PropertyPro.Infrastructure.Persistence.Interceptors;
 using System.Text;
+using Minio;
 
 namespace PropertyPro.Infrastructure;
 

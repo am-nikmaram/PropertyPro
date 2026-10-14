@@ -32,6 +32,8 @@ public interface IApplicationDbContext
 
     DbSet<PreventiveMaintenancePlan> PreventiveMaintenancePlans { get; }
 
+    DbSet<FileAttachment> FileAttachments { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken);
 }

@@ -42,4 +42,7 @@ public class Asset : BaseEntity
 
     public ICollection<PreventiveMaintenancePlan> PreventiveMaintenancePlans
     { get; set; } = new List<PreventiveMaintenancePlan>();
+
+    public ICollection<FileAttachment> Attachments { get; set; }
+    = new List<FileAttachment>();
 }

@@ -25,7 +25,7 @@ services:
       - "9001:9001"
     volumes:
       - aistor_data:/mnt/data
-      - ./minio.license:/minio.license:ro
+      - ./minio.license/minio.license:/minio.license:ro
     command: server /mnt/data --console-address ":9001" --license /minio.license
 
 volumes:

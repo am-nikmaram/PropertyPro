@@ -43,6 +43,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<PreventiveMaintenancePlan> PreventiveMaintenancePlans
     => Set<PreventiveMaintenancePlan>();
 
+    public DbSet<FileAttachment> FileAttachments
+    => Set<FileAttachment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

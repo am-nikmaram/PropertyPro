@@ -30,4 +30,7 @@ public class MaintenanceRecord : BaseEntity
     public Asset Asset { get; set; } = null!;
     public ICollection<WorkOrder> WorkOrders { get; set; }
     = new List<WorkOrder>();
+
+    public ICollection<FileAttachment> Attachments { get; set; }
+    = new List<FileAttachment>();
 }

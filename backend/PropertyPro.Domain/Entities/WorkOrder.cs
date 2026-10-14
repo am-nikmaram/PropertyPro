@@ -38,4 +38,7 @@ public class WorkOrder : BaseEntity
     public Vendor? Vendor { get; set; }
 
     public MaintenanceRecord MaintenanceRecord { get; set; } = null!;
+
+    public ICollection<FileAttachment> Attachments { get; set; }
+    = new List<FileAttachment>();
 }
