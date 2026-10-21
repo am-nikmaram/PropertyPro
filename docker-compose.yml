@@ -1,25 +1,33 @@
 
 services:
-  # sqlserver:
-  #   image: mcr.microsoft.com/mssql/server:2022-latest
-  #   container_name: propertypro-sqlserver
-  #   restart: unless-stopped
-  #   environment:
-  #     ACCEPT_EULA: "Y"
-  #     MSSQL_PID: Developer
-  #     MSSQL_SA_PASSWORD: "Your_Strong_Dev_Password_123!"
-  #   ports:
-  #     - "1433:1433"
-  #   volumes:
-  #     - sqlserver_data:/var/opt/mssql
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: propertypro-sqlserver
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${SQLSERVER_SA_PASSWORD:?Set SQLSERVER_SA_PASSWORD in .env}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
 
   aistor:
     image: quay.io/minio/aistor/minio:latest
     container_name: propertypro-aistor
     restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: propertypro
-      MINIO_ROOT_PASSWORD: "propertypro-dev-password"
+      MINIO_ROOT_USER: ${AISTOR_ROOT_USER:?Set AISTOR_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${AISTOR_ROOT_PASSWORD:?Set AISTOR_ROOT_PASSWORD in .env}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -28,7 +36,36 @@ services:
       - ./minio.license/minio.license:/minio.license:ro
     command: server /mnt/data --console-address ":9001" --license /minio.license
 
+
+  api:
+    build:
+      context: .
+      dockerfile: PropertyPro.Api/Dockerfile
+    container_name: propertypro-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PropertyProDb;User Id=sa;Password=${SQLSERVER_SA_PASSWORD};Encrypt=True;TrustServerCertificate=True"
+
+      Minio__Endpoint: aistor:9000
+      Minio__AccessKey: ${AISTOR_ROOT_USER}
+      Minio__SecretKey: ${AISTOR_ROOT_PASSWORD}
+      Minio__BucketName: propertypro
+      Minio__UseSsl: "false"
+    ports:
+      - "8080:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      aistor:
+        condition: service_started
+
+
 volumes:
-  # sqlserver_data:
+  sqlserver_data:
   aistor_data:
+
+
 
