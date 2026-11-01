@@ -407,6 +407,73 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.ToTable("Facilities");
                 });
 
+            modelBuilder.Entity("PropertyPro.Domain.Entities.FileAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaintenanceRecordId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("SizeInBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("WorkOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("MaintenanceRecordId");
+
+                    b.HasIndex("StorageKey")
+                        .IsUnique();
+
+                    b.HasIndex("WorkOrderId");
+
+                    b.ToTable("FileAttachments", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FileAttachments_ExactlyOneParent", "(\r\n    CASE WHEN AssetId IS NULL THEN 0 ELSE 1 END +\r\n    CASE WHEN MaintenanceRecordId IS NULL THEN 0 ELSE 1 END +\r\n    CASE WHEN WorkOrderId IS NULL THEN 0 ELSE 1 END\r\n) = 1");
+                        });
+                });
+
             modelBuilder.Entity("PropertyPro.Domain.Entities.Floor", b =>
                 {
                     b.Property<int>("Id")
@@ -1238,6 +1305,30 @@ namespace PropertyPro.Infrastructure.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("PropertyPro.Domain.Entities.FileAttachment", b =>
+                {
+                    b.HasOne("PropertyPro.Domain.Entities.Asset", "Asset")
+                        .WithMany("Attachments")
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PropertyPro.Domain.Entities.MaintenanceRecord", "MaintenanceRecord")
+                        .WithMany("Attachments")
+                        .HasForeignKey("MaintenanceRecordId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PropertyPro.Domain.Entities.WorkOrder", "WorkOrder")
+                        .WithMany("Attachments")
+                        .HasForeignKey("WorkOrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("MaintenanceRecord");
+
+                    b.Navigation("WorkOrder");
+                });
+
             modelBuilder.Entity("PropertyPro.Domain.Entities.Floor", b =>
                 {
                     b.HasOne("PropertyPro.Domain.Entities.Building", "Building")
@@ -1328,6 +1419,8 @@ namespace PropertyPro.Infrastructure.Migrations
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.Asset", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("MaintenanceRecords");
 
                     b.Navigation("PreventiveMaintenancePlans");
@@ -1355,6 +1448,8 @@ namespace PropertyPro.Infrastructure.Migrations
 
             modelBuilder.Entity("PropertyPro.Domain.Entities.MaintenanceRecord", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("WorkOrders");
                 });
 
@@ -1386,6 +1481,11 @@ namespace PropertyPro.Infrastructure.Migrations
             modelBuilder.Entity("PropertyPro.Domain.Entities.Vendor", b =>
                 {
                     b.Navigation("WorkOrders");
+                });
+
+            modelBuilder.Entity("PropertyPro.Domain.Entities.WorkOrder", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 #pragma warning restore 612, 618
         }
