@@ -9,20 +9,26 @@ public class DeleteFacilityCommandHandler
     : IRequestHandler<DeleteFacilityCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
     public DeleteFacilityCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task Handle(
         DeleteFacilityCommand request,
         CancellationToken cancellationToken)
     {
+        var organizationId = _currentUser.OrganizationId;
+        if (!organizationId.HasValue)
+            throw new UnauthorizedException("Your account is not assigned to an organization.");
+
         var facility = await _context.Facilities
             .FirstOrDefaultAsync(
-                x => x.Id == request.Id,
+                x => x.Id == request.Id && x.OrganizationId == organizationId.Value,
                 cancellationToken);
 
         if (facility is null)

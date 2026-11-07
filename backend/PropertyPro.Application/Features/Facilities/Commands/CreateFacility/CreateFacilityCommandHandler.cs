@@ -13,24 +13,30 @@ public class CreateFacilityCommandHandler
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
 
     public CreateFacilityCommandHandler(
         IApplicationDbContext context,
-        IMapper mapper)
+        IMapper mapper,
+        ICurrentUserService currentUser)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
     }
 
     public async Task<FacilityDto> Handle(
         CreateFacilityCommand request,
         CancellationToken cancellationToken)
     {
-        // Check organization
+        var organizationId = _currentUser.OrganizationId;
+        if (!organizationId.HasValue)
+            throw new UnauthorizedException("Your account is not assigned to an organization.");
+
         var organizationExists =
             await _context.Organizations
                 .AnyAsync(
-                    x => x.Id == request.OrganizationId &&
+                    x => x.Id == organizationId.Value &&
                          x.IsActive,
                     cancellationToken);
 
@@ -44,8 +50,7 @@ public class CreateFacilityCommandHandler
         var codeExists =
             await _context.Facilities
                 .AnyAsync(
-                    x => x.OrganizationId ==
-                         request.OrganizationId &&
+                    x => x.OrganizationId == organizationId.Value &&
                          x.Code == request.Code,
                     cancellationToken);
 
@@ -58,6 +63,7 @@ public class CreateFacilityCommandHandler
 
         // Create entity
         var facility = _mapper.Map<Facility>(request);
+        facility.OrganizationId = organizationId.Value;
 
         facility.Name = facility.Name.Trim();
         facility.Code = facility.Code.Trim().ToUpperInvariant();

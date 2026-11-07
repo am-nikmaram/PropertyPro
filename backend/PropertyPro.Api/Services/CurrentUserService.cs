@@ -18,6 +18,11 @@ public CurrentUserService(
             .User
             .FindFirstValue(ClaimTypes.NameIdentifier);
 
+    public int? OrganizationId =>
+        int.TryParse(_httpContextAccessor.HttpContext?.User.FindFirstValue("organization_id"), out var id)
+            ? id
+            : null;
+
     public string? Email =>
         _httpContextAccessor.HttpContext?
             .User

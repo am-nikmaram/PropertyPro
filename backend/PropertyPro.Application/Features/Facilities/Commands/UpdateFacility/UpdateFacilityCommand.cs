@@ -5,7 +5,6 @@ namespace PropertyPro.Application.Features.Facilities.Commands.UpdateFacility;
 
 public record UpdateFacilityCommand(
     int Id,
-    int OrganizationId,
     string Name,
     string Code,
     string? Address,

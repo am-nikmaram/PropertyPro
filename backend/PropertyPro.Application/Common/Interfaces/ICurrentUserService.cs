@@ -4,6 +4,8 @@ public interface ICurrentUserService
 {
     string? UserId { get; }
 
+    int? OrganizationId { get; }
+
     string? Email { get; }
 
     string? Name { get; }

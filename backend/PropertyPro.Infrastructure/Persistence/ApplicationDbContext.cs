@@ -8,10 +8,14 @@ namespace PropertyPro.Infrastructure.Persistence;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
+    private readonly int? _organizationId;
+
     public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options)
+        DbContextOptions<ApplicationDbContext> options,
+        ICurrentUserService currentUser)
         : base(options)
     {
+        _organizationId = currentUser.OrganizationId;
     }
 
     public DbSet<Organization> Organizations => Set<Organization>();
@@ -52,5 +56,26 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(ApplicationDbContext).Assembly);
+
+        modelBuilder.Entity<ApplicationUser>()
+            .HasOne(x => x.Organization)
+            .WithMany()
+            .HasForeignKey(x => x.OrganizationId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Fail closed for every record in the facility hierarchy when the
+        // authenticated user has no organization claim.
+        modelBuilder.Entity<Facility>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<Building>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<Floor>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<Unit>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Floor.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<Room>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<Asset>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
     }
 }

@@ -12,41 +12,35 @@ public class UpdateFacilityCommandHandler
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
 
     public UpdateFacilityCommandHandler(
         IApplicationDbContext context,
-        IMapper mapper)
+        IMapper mapper,
+        ICurrentUserService currentUser)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
     }
 
     public async Task<FacilityDto> Handle(
         UpdateFacilityCommand request,
         CancellationToken cancellationToken)
     {
+        var organizationId = _currentUser.OrganizationId;
+        if (!organizationId.HasValue)
+            throw new UnauthorizedException("Your account is not assigned to an organization.");
+
         var facility = await _context.Facilities
             .FirstOrDefaultAsync(
-                x => x.Id == request.Id,
+                x => x.Id == request.Id && x.OrganizationId == organizationId.Value,
                 cancellationToken);
 
         if (facility is null)
         {
             throw new NotFoundException(
                 $"Facility with ID {request.Id} was not found.");
-        }
-
-        var organizationExists =
-            await _context.Organizations
-                .AnyAsync(
-                    x => x.Id == request.OrganizationId &&
-                         x.IsActive,
-                    cancellationToken);
-
-        if (!organizationExists)
-        {
-            throw new NotFoundException(
-                "The specified organization does not exist.");
         }
 
         var normalizedCode =
@@ -57,7 +51,7 @@ public class UpdateFacilityCommandHandler
                 .AnyAsync(
                     x =>
                         x.Id != request.Id &&
-                        x.OrganizationId == request.OrganizationId &&
+                        x.OrganizationId == organizationId.Value &&
                         x.Code == normalizedCode &&
                         x.IsActive,
                     cancellationToken);

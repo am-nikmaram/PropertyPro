@@ -23,4 +23,8 @@ public interface IUserManagementService
         string userId,
         string role,
         CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<OrganizationOptionDto>> GetOrganizationsAsync(CancellationToken cancellationToken);
+
+    Task AssignOrganizationAsync(string userId, int organizationId, CancellationToken cancellationToken);
 }

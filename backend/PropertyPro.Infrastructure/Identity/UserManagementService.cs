@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Interfaces;
 using PropertyPro.Application.Features.Users.DTOs;
+using PropertyPro.Infrastructure.Persistence;
+using PropertyPro.Application.Common.Exceptions;
 
 namespace PropertyPro.Infrastructure.Identity;
 
@@ -9,13 +11,16 @@ public class UserManagementService : IUserManagementService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ApplicationDbContext _context;
 
     public UserManagementService(
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _context = context;
     }
 
     public async Task<IReadOnlyList<UserManagementDto>> GetUsersAsync(
@@ -42,6 +47,7 @@ public class UserManagementService : IUserManagementService
                     user.LockoutEnabled,
                     user.LockoutEnd.HasValue &&
                     user.LockoutEnd.Value > DateTimeOffset.UtcNow,
+                    user.OrganizationId,
                     roles.ToList()));
         }
 
@@ -68,6 +74,7 @@ public class UserManagementService : IUserManagementService
             user.LockoutEnabled,
             user.LockoutEnd.HasValue &&
             user.LockoutEnd.Value > DateTimeOffset.UtcNow,
+            user.OrganizationId,
             roles.ToList());
     }
 
@@ -146,6 +153,31 @@ public class UserManagementService : IUserManagementService
 
             throw new InvalidOperationException(
                 $"The role could not be removed: {errors}");
+        }
+    }
+
+    public async Task<IReadOnlyList<OrganizationOptionDto>> GetOrganizationsAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Organizations.AsNoTracking()
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.Name)
+            .Select(x => new OrganizationOptionDto(x.Id, x.Name, x.Code))
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task AssignOrganizationAsync(string userId, int organizationId, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null) throw new NotFoundException($"User '{userId}' was not found.");
+        var organizationExists = await _context.Organizations.AnyAsync(x => x.Id == organizationId && x.IsActive, cancellationToken);
+        if (!organizationExists) throw new NotFoundException($"Organization '{organizationId}' was not found.");
+
+        user.OrganizationId = organizationId;
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(x => x.Description));
+            throw new InvalidOperationException($"The organization could not be assigned: {errors}");
         }
     }
 }

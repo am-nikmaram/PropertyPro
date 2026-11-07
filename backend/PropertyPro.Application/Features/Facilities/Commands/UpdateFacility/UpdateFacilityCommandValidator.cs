@@ -10,10 +10,6 @@ public class UpdateFacilityCommandValidator
         RuleFor(x => x.Id)
             .GreaterThan(0);
 
-        RuleFor(x => x.OrganizationId)
-            .GreaterThan(0)
-            .WithMessage("Organization is required.");
-
         RuleFor(x => x.Name)
             .NotEmpty()
             .MaximumLength(200);

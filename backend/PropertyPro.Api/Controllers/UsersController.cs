@@ -6,6 +6,8 @@ using PropertyPro.Application.Features.Users.Commands.AssignRole;
 using PropertyPro.Application.Features.Users.Commands.RemoveRole;
 using PropertyPro.Application.Features.Users.Queries.GetUserById;
 using PropertyPro.Application.Features.Users.Queries.GetUsers;
+using PropertyPro.Application.Features.Users.Queries.GetOrganizations;
+using PropertyPro.Application.Features.Users.Commands.AssignOrganization;
 
 namespace PropertyPro.Api.Controllers;
 
@@ -30,6 +32,20 @@ public class UsersController : ControllerBase
             cancellationToken);
 
         return Ok(result);
+    }
+
+    [HttpGet("organizations")]
+    public async Task<IActionResult> GetOrganizations(CancellationToken cancellationToken)
+    {
+        var organizations = await _mediator.Send(new GetOrganizationsQuery(), cancellationToken);
+        return Ok(organizations);
+    }
+
+    [HttpPut("{id}/organization")]
+    public async Task<IActionResult> AssignOrganization(string id, [FromBody] AssignOrganizationRequest request, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new AssignOrganizationCommand(id, request.OrganizationId), cancellationToken);
+        return NoContent();
     }
 
     [HttpGet("{id}")]
@@ -76,3 +92,4 @@ public class UsersController : ControllerBase
 }
 
 public record AssignRoleRequest(string Role);
+public record AssignOrganizationRequest(int OrganizationId);

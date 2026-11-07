@@ -64,6 +64,13 @@ using (var scope = app.Services.CreateScope())
         .GetRequiredService<DatabaseInitializer>();
 
     await initializer.InitializeAsync();
+
+    if (app.Environment.IsDevelopment())
+    {
+        await IdentitySeeder.AssignDevelopmentAdminOrganizationAsync(
+            scope.ServiceProvider,
+            builder.Configuration);
+    }
 }
 
 

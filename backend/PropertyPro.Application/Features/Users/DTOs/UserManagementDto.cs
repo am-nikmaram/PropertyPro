@@ -8,4 +8,7 @@ public record UserManagementDto(
     bool EmailConfirmed,
     bool LockoutEnabled,
     bool IsLockedOut,
+    int? OrganizationId,
     IReadOnlyList<string> Roles);
+
+public record OrganizationOptionDto(int Id, string Name, string Code);

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PropertyPro.Application.Common.Interfaces;
+using PropertyPro.Application.Common.Exceptions;
 using PropertyPro.Application.Common.Models;
 using PropertyPro.Application.Features.Facilities.DTOs;
 
@@ -12,20 +13,26 @@ public class GetFacilitiesQueryHandler
         PagedResult<FacilityListDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
     public GetFacilitiesQueryHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<PagedResult<FacilityListDto>> Handle(
         GetFacilitiesQuery request,
         CancellationToken cancellationToken)
     {
+        var organizationId = _currentUser.OrganizationId;
+        if (!organizationId.HasValue)
+            throw new UnauthorizedException("Your account is not assigned to an organization.");
+
         var query = _context.Facilities
             .AsNoTracking()
-            .Where(x => x.IsActive)
+            .Where(x => x.IsActive && x.OrganizationId == organizationId.Value)
             .AsQueryable();
 
         // Search

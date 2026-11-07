@@ -61,6 +61,11 @@ public TokenService(
             $"{user.FirstName} {user.LastName}".Trim())
     };
 
+        if (user.OrganizationId.HasValue)
+        {
+            claims.Add(new Claim("organization_id", user.OrganizationId.Value.ToString()));
+        }
+
         claims.AddRange(
             roles.Select(role =>
                 new Claim(ClaimTypes.Role, role)));
