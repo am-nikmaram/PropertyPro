@@ -1,0 +1,15 @@
+.inventory-page { display:grid; gap:22px; color:#18314b; }
+.heading,.toolbar { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+.eyebrow { color:#7f91a2; font-size:9px; font-weight:700; letter-spacing:.13em; }
+h1 { margin:9px 0 5px; font-size:32px; letter-spacing:-.05em; }
+.heading p,.toolbar p { margin:0; color:#8290a0; font-size:12px; }
+.total { display:grid; gap:3px; padding:11px 15px; border:1px solid #e4ebef; border-radius:10px; background:#fff; }
+.total strong { color:#27435c; font-size:18px; }.total span { color:#8a99a8; font-size:10px; }
+.card { overflow:hidden; border:1px solid #e7edf2; border-radius:13px; background:#fff; }
+.toolbar { padding:18px 22px 12px; }.toolbar h2 { margin:0 0 5px; font-size:14px; }.toolbar input { width:min(100%,240px); }
+.filters { display:flex; gap:10px; padding:0 22px 16px; }.filters p-select { min-width:180px; }
+:host ::ng-deep .p-datatable-thead > tr > th { color:#8190a0; background:#f9fbfc; font-size:9px; letter-spacing:.08em; }
+:host ::ng-deep .p-datatable-tbody > tr > td { padding:13px 18px; color:#53697d; font-size:11px; }
+.sub { display:block; margin-top:4px; color:#98a5b1; font-size:10px; }.criticality { color:#5e7487; }.criticality.high { color:#ad6740; }
+.empty { padding:30px; color:#8796a5; text-align:center; }.error { display:flex; justify-content:space-between; align-items:center; margin:0 18px 14px; padding:10px 12px; color:#9e4c51; background:#fff8f7; font-size:12px; }
+@media(max-width:700px){.heading,.toolbar{align-items:stretch;flex-direction:column}.toolbar input{width:100%}.filters{flex-direction:column;padding-inline:14px}.filters p-select{width:100%}}

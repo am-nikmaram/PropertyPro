@@ -18,6 +18,20 @@ export const routes: Routes = [
             (component) => component.FacilityListComponent,
           ),
       },
+      {
+        path: 'buildings',
+        loadComponent: () =>
+          import('./features/buildings/pages/building-list/building-list.component').then(
+            (component) => component.BuildingListComponent,
+          ),
+      },
+      {
+        path: 'assets',
+        loadComponent: () =>
+          import('./features/assets/pages/asset-list/asset-list.component').then(
+            (component) => component.AssetListComponent,
+          ),
+      },
     ],
   },
   {
