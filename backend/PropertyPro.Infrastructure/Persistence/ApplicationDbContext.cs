@@ -77,5 +77,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             .HasQueryFilter(x => _organizationId.HasValue && x.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
         modelBuilder.Entity<Asset>()
             .HasQueryFilter(x => _organizationId.HasValue && x.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<MaintenanceRecord>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Asset.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<PreventiveMaintenancePlan>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.Asset.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<WorkOrder>()
+            .HasQueryFilter(x => _organizationId.HasValue && x.MaintenanceRecord.Asset.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value);
+        modelBuilder.Entity<FileAttachment>()
+            .HasQueryFilter(x => _organizationId.HasValue &&
+                ((x.AssetId.HasValue && x.Asset!.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value) ||
+                 (x.MaintenanceRecordId.HasValue && x.MaintenanceRecord!.Asset.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value) ||
+                 (x.WorkOrderId.HasValue && x.WorkOrder!.MaintenanceRecord.Asset.Room.Unit.Floor.Building.Facility.OrganizationId == _organizationId.Value)));
     }
 }
