@@ -1,0 +1,10 @@
+<section class="editor"><a class="back" routerLink="/app/buildings"><i class="pi pi-arrow-left"></i> Back to buildings</a><header><span class="eyebrow">PROPERTY PORTFOLIO</span><h1>{{id?'Edit building':'Add a building'}}</h1><p>Building information and facility assignment.</p></header>
+  @if(loading()){<div class="panel">Loading building…</div>}@else{<form class="panel" (ngSubmit)="save()"><h2>Building information</h2><div class="fields">
+    <label>Facility <span>*</span><select name="facilityId" [(ngModel)]="form.facilityId" required><option [ngValue]="0" disabled>Select a facility</option>@for(f of facilities();track f.id){<option [ngValue]="f.id">{{f.name}} · {{f.code}}</option>}</select></label>
+    <label>Building name <span>*</span><input pInputText name="name" [(ngModel)]="form.name" required maxlength="200" /></label>
+    <label>Building code <span>*</span><input pInputText name="code" [(ngModel)]="form.code" required maxlength="50" pattern="[A-Za-z0-9_-]+" /></label>
+    <label>Year built<input pInputText type="number" name="yearBuilt" [(ngModel)]="form.yearBuilt" min="1000" max="9999" /></label>
+    <label>Total area (m²)<input pInputText type="number" name="totalArea" [(ngModel)]="form.totalArea" min="0" step="0.01" /></label>
+    <label class="wide">Description<textarea pTextarea name="description" [(ngModel)]="form.description" rows="4" maxlength="1000"></textarea></label>
+  </div>@if(error();as message){<div class="error" role="alert">{{message}}</div>}<div class="actions"><p-button label="Cancel" [text]="true" routerLink="/app/buildings"/><p-button type="submit" [label]="id?'Save changes':'Create building'" icon="pi pi-check" [loading]="saving()" [disabled]="saving()"/></div></form>}
+</section>

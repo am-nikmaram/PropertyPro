@@ -28,6 +28,11 @@ export class AuthSessionService {
     return true;
   }
 
+  hasAnyRole(...roles: string[]): boolean {
+    const assigned = this.currentUser()?.roles ?? [];
+    return roles.some((role) => assigned.some((value) => value.toLowerCase() === role.toLowerCase()));
+  }
+
   private readSession(): AuthResponse | null {
     try {
       const stored = sessionStorage.getItem(AUTH_SESSION_KEY);

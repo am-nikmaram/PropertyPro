@@ -12,11 +12,44 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'facilities' },
       {
+        path: 'facilities/new',
+        loadComponent: () =>
+          import('./features/facilities/pages/facility-form/facility-form.component').then(
+            (component) => component.FacilityFormComponent,
+          ),
+      },
+      {
+        path: 'facilities/:id/edit',
+        loadComponent: () =>
+          import('./features/facilities/pages/facility-form/facility-form.component').then(
+            (component) => component.FacilityFormComponent,
+          ),
+      },
+      {
+        path: 'facilities/:id',
+        loadComponent: () =>
+          import('./features/facilities/pages/facility-detail/facility-detail.component').then(
+            (component) => component.FacilityDetailComponent,
+          ),
+      },
+      {
         path: 'facilities',
         loadComponent: () =>
           import('./features/facilities/pages/facility-list/facility-list.component').then(
             (component) => component.FacilityListComponent,
           ),
+      },
+      {
+        path: 'buildings/new',
+        loadComponent: () => import('./features/buildings/pages/building-form/building-form.component').then(component => component.BuildingFormComponent),
+      },
+      {
+        path: 'buildings/:id/edit',
+        loadComponent: () => import('./features/buildings/pages/building-form/building-form.component').then(component => component.BuildingFormComponent),
+      },
+      {
+        path: 'buildings/:id',
+        loadComponent: () => import('./features/buildings/pages/building-detail/building-detail.component').then(component => component.BuildingDetailComponent),
       },
       {
         path: 'buildings',
@@ -25,6 +58,9 @@ export const routes: Routes = [
             (component) => component.BuildingListComponent,
           ),
       },
+      { path: 'assets/new', loadComponent: () => import('./features/assets/pages/asset-form/asset-form.component').then(component => component.AssetFormComponent) },
+      { path: 'assets/:id/edit', loadComponent: () => import('./features/assets/pages/asset-form/asset-form.component').then(component => component.AssetFormComponent) },
+      { path: 'assets/:id', loadComponent: () => import('./features/assets/pages/asset-detail/asset-detail.component').then(component => component.AssetDetailComponent) },
       {
         path: 'assets',
         loadComponent: () =>

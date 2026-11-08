@@ -1,0 +1,9 @@
+<section class="facility-detail">
+  <a class="back-link" routerLink="/app/facilities"><i class="pi pi-arrow-left" aria-hidden="true"></i> Back to facilities</a>
+  @if (loading()) { <div class="panel">Loading facility…</div> }
+  @if (error(); as message) { <div class="error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ message }} <p-button label="Retry" [text]="true" (onClick)="load()" /></div> }
+  @if (facility(); as item) {
+    <header class="heading"><div><span class="eyebrow">FACILITY DETAILS</span><h1>{{ item.name }}</h1><span class="code">{{ item.code }}</span></div>@if(canManage()){<div class="actions"><p-button label="Edit facility" icon="pi pi-pencil" [outlined]="true" [routerLink]="['/app/facilities', item.id, 'edit']" /><p-button label="Deactivate" icon="pi pi-ban" severity="danger" [text]="true" (onClick)="deactivate()" /></div>}</header>
+    <article class="panel"><div class="panel-heading"><div><h2>Location information</h2><p>Facility address and operating status.</p></div><p-tag [value]="item.isActive ? 'Active' : 'Inactive'" [severity]="item.isActive ? 'success' : 'secondary'" [rounded]="true" /></div><dl><div><dt>Street address</dt><dd>{{ item.address || '—' }}</dd></div><div><dt>City</dt><dd>{{ item.city || '—' }}</dd></div><div><dt>Country</dt><dd>{{ item.country || '—' }}</dd></div><div><dt>Postal code</dt><dd>{{ item.postalCode || '—' }}</dd></div></dl></article>
+  }
+</section>

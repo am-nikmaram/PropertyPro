@@ -1,0 +1,19 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { AssetsApiService, AssetCategory, AssetDetail, AssetWriteRequest, BuildingOption, RoomOption } from '../../assets-api.service';
+
+@Component({selector:'app-asset-form',imports:[FormsModule,RouterLink,ButtonModule,InputTextModule],templateUrl:'./asset-form.component.html',styleUrl:'./asset-form.component.scss'})
+export class AssetFormComponent {
+ private readonly api=inject(AssetsApiService);private readonly route=inject(ActivatedRoute);private readonly router=inject(Router);readonly id=Number(this.route.snapshot.paramMap.get('id'))||null;readonly categories=signal<AssetCategory[]>([]);readonly buildings=signal<BuildingOption[]>([]);readonly buildingId=signal<number|null>(null);readonly rooms=signal<RoomOption[]>([]);readonly loading=signal(!!this.id);readonly saving=signal(false);readonly error=signal<string|null>(null);private loadedAsset:AssetDetail|null=null;
+ form:AssetWriteRequest={assetNumber:'',name:'',assetCategoryId:0,roomId:0,manufacturer:null,model:null,serialNumber:null,installationDate:null,warrantyStartDate:null,warrantyEndDate:null,purchaseCost:null,criticality:2,status:1,description:null};
+ constructor(){this.api.getCategories().subscribe({next:x=>this.categories.set(x),error:e=>this.fail(e,'Asset categories could not be loaded.')});this.api.getBuildings().subscribe({next:x=>this.buildings.set(x),error:e=>this.fail(e,'Buildings could not be loaded.')});this.api.getRooms(null).subscribe({next:x=>{this.rooms.set(x);this.setLocationFromAsset()},error:e=>this.fail(e,'Rooms could not be loaded.')});if(this.id)this.api.getAsset(this.id).subscribe({next:x=>{this.loadedAsset=x;this.form=this.fromDetail(x);this.setLocationFromAsset();this.loading.set(false)},error:e=>{this.loading.set(false);this.fail(e,'Asset could not be loaded.')}})}
+ changeBuilding(id:number|null):void{this.buildingId.set(id);this.form.roomId=0}visibleRooms():RoomOption[]{const id=this.buildingId();return id?this.rooms().filter(room=>room.buildingId===id):[]} 
+ save():void{this.saving.set(true);this.error.set(null);const body:AssetWriteRequest={...this.form,name:this.form.name.trim(),assetNumber:this.id?undefined:this.form.assetNumber?.trim(),manufacturer:this.clean(this.form.manufacturer),model:this.clean(this.form.model),serialNumber:this.clean(this.form.serialNumber),description:this.clean(this.form.description)};const call=this.id?this.api.updateAsset(this.id,body):this.api.createAsset(body);call.subscribe({next:x=>{this.saving.set(false);void this.router.navigate(['/app/assets',x.id])},error:e=>{this.saving.set(false);this.fail(e,'Asset could not be saved.')}})}
+ private fromDetail(x:AssetDetail):AssetWriteRequest{return{assetNumber:x.assetNumber,name:x.name,assetCategoryId:x.assetCategoryId,roomId:x.roomId,manufacturer:x.manufacturer,model:x.model,serialNumber:x.serialNumber,installationDate:this.date(x.installationDate),warrantyStartDate:this.date(x.warrantyStartDate),warrantyEndDate:this.date(x.warrantyEndDate),purchaseCost:x.purchaseCost,criticality:x.criticality,status:x.status,description:x.description}}
+ private setLocationFromAsset():void{if(!this.loadedAsset)return;const room=this.rooms().find(item=>item.id===this.loadedAsset?.roomId);if(room)this.buildingId.set(room.buildingId)}
+ private date(value:string|null):string|null{return value?value.slice(0,10):null}private clean(value:string|null|undefined):string|null{return value?.trim()||null}private fail(e:HttpErrorResponse,fallback:string):void{this.error.set(e.status===0?'The API could not be reached.':e.error?.detail??fallback)}
+}

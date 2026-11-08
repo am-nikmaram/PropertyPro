@@ -7,6 +7,20 @@ export interface FacilityListItem {
   isActive: boolean;
 }
 
+export interface Facility extends FacilityListItem {
+  address: string | null;
+  postalCode: string | null;
+}
+
+export interface FacilityWriteRequest {
+  name: string;
+  code: string;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  postalCode: string | null;
+}
+
 export interface PagedResult<T> {
   items: T[];
   pageNumber: number;

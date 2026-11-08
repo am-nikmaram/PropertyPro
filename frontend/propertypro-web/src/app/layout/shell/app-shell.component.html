@@ -44,7 +44,7 @@
     <header class="topbar">
       <div class="topbar-start">
         <p-button icon="pi pi-bars" [text]="true" [rounded]="true" severity="secondary" aria-label="Open navigation" styleClass="menu-button" (onClick)="isSidebarOpen.set(true)" />
-        <div class="breadcrumb"><span>PropertyPro</span><i class="pi pi-angle-right" aria-hidden="true"></i><strong>Facilities</strong></div>
+        <div class="breadcrumb"><span>PropertyPro</span><i class="pi pi-angle-right" aria-hidden="true"></i><strong>{{ currentSection() }}</strong></div>
       </div>
       <div class="topbar-end"><span class="environment-label"><span></span> OPERATIONS</span><span class="topbar-divider"></span><span class="user-greeting">{{ user()?.firstName ?? 'Welcome' }}</span><p-avatar [label]="initials()" shape="circle" styleClass="top-avatar" /></div>
     </header>

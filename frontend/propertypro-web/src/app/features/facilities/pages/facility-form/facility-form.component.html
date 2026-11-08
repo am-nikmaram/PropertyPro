@@ -1,0 +1,19 @@
+<section class="facility-editor">
+  <a class="back-link" routerLink="/app/facilities"><i class="pi pi-arrow-left" aria-hidden="true"></i> Back to facilities</a>
+  <div class="title"><span class="eyebrow">PROPERTY PORTFOLIO</span><h1>{{ id ? 'Edit facility' : 'Add a facility' }}</h1><p>{{ id ? 'Update this location’s information.' : 'Add a property location to your workspace.' }}</p></div>
+  @if (loading()) { <div class="panel loading">Loading facility…</div> } @else {
+    <form class="panel" (ngSubmit)="save()">
+      <div class="form-heading"><h2>Facility information</h2><p>Fields marked required must be completed.</p></div>
+      <div class="fields">
+        <label>Facility name <span>*</span><input pInputText name="name" [(ngModel)]="form.name" required maxlength="200" autocomplete="organization" /></label>
+        <label>Facility code <span>*</span><input pInputText name="code" [(ngModel)]="form.code" required maxlength="50" pattern="[A-Za-z0-9_-]+" placeholder="e.g. TOR-HQ" /></label>
+        <label class="wide">Street address<input pInputText name="address" [(ngModel)]="form.address" maxlength="500" autocomplete="street-address" /></label>
+        <label>City<input pInputText name="city" [(ngModel)]="form.city" maxlength="100" autocomplete="address-level2" /></label>
+        <label>Country<input pInputText name="country" [(ngModel)]="form.country" maxlength="100" autocomplete="country-name" /></label>
+        <label>Postal code<input pInputText name="postalCode" [(ngModel)]="form.postalCode" maxlength="20" autocomplete="postal-code" /></label>
+      </div>
+      @if (error(); as message) { <div class="error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ message }}</div> }
+      <div class="actions"><p-button label="Cancel" [text]="true" routerLink="/app/facilities" /><p-button type="submit" [label]="id ? 'Save changes' : 'Create facility'" icon="pi pi-check" [loading]="saving()" [disabled]="saving()" /></div>
+    </form>
+  }
+</section>

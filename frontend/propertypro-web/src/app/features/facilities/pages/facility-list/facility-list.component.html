@@ -5,7 +5,7 @@
       <h1>Facilities</h1>
       <p>Manage the places and properties behind your operations.</p>
     </div>
-    <div class="portfolio-count"><span class="count-icon"><i class="pi pi-building" aria-hidden="true"></i></span><span><strong>{{ totalRecords() }}</strong><small>facilities in portfolio</small></span></div>
+    <div class="heading-actions"><div class="portfolio-count"><span class="count-icon"><i class="pi pi-building" aria-hidden="true"></i></span><span><strong>{{ totalRecords() }}</strong><small>facilities in portfolio</small></span></div>@if(canManage()){<p-button label="Add facility" icon="pi pi-plus" routerLink="/app/facilities/new" />}</div>
   </div>
 
   <div class="content-card">
@@ -37,18 +37,19 @@
       styleClass="facility-table"
     >
       <ng-template #header>
-        <tr><th pSortableColumn="name">FACILITY <p-sort-icon field="name" /></th><th pSortableColumn="code">CODE <p-sort-icon field="code" /></th><th pSortableColumn="city">LOCATION <p-sort-icon field="city" /></th><th>STATUS</th></tr>
+        <tr><th pSortableColumn="name">FACILITY <p-sort-icon field="name" /></th><th pSortableColumn="code">CODE <p-sort-icon field="code" /></th><th pSortableColumn="city">LOCATION <p-sort-icon field="city" /></th><th>STATUS</th><th aria-label="Actions"></th></tr>
       </ng-template>
       <ng-template #body let-facility>
         <tr>
-          <td><div class="facility-name"><span class="facility-symbol"><i class="pi pi-building" aria-hidden="true"></i></span><strong>{{ facility.name }}</strong></div></td>
+          <td><a class="facility-name facility-link" [routerLink]="['/app/facilities', facility.id]"><span class="facility-symbol"><i class="pi pi-building" aria-hidden="true"></i></span><strong>{{ facility.name }}</strong></a></td>
           <td><span class="facility-code">{{ facility.code }}</span></td>
           <td><span class="location-cell"><i class="pi pi-map-marker" aria-hidden="true"></i>{{ facility.city || '—' }}<span class="country">{{ facility.country }}</span></span></td>
           <td><p-tag [value]="facility.isActive ? 'Active' : 'Inactive'" [severity]="facility.isActive ? 'success' : 'secondary'" [rounded]="true" /></td>
+          <td>@if(canManage()){<a class="row-link" [routerLink]="['/app/facilities', facility.id, 'edit']" [attr.aria-label]="'Edit ' + facility.name"><i class="pi pi-pencil" aria-hidden="true"></i></a>}</td>
         </tr>
       </ng-template>
       <ng-template #emptymessage>
-        <tr><td colspan="4"><div class="empty-state"><span><i class="pi pi-search" aria-hidden="true"></i></span><strong>No facilities found</strong><p>Try a different search to find a matching facility.</p></div></td></tr>
+        <tr><td colspan="5"><div class="empty-state"><span><i class="pi pi-search" aria-hidden="true"></i></span><strong>No facilities found</strong><p>Try a different search to find a matching facility.</p></div></td></tr>
       </ng-template>
     </p-table>
   </div>

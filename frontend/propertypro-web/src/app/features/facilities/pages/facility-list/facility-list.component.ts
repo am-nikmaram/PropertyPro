@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,15 +11,17 @@ import { TagModule } from 'primeng/tag';
 import type { TableLazyLoadEvent } from 'primeng/types/table';
 import { FacilitiesApiService } from '../../data-access/facilities-api.service';
 import { FacilityListItem } from '../../models/facility.models';
+import { AuthSessionService } from '../../../../core/auth/auth-session.service';
 
 @Component({
   selector: 'app-facility-list',
-  imports: [ButtonModule, InputTextModule, TableModule, TagModule],
+  imports: [RouterLink, ButtonModule, InputTextModule, TableModule, TagModule],
   templateUrl: './facility-list.component.html',
   styleUrl: './facility-list.component.scss',
 })
 export class FacilityListComponent {
   private readonly api = inject(FacilitiesApiService);
+  private readonly session = inject(AuthSessionService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly facilities = signal<FacilityListItem[]>([]);
@@ -28,6 +31,7 @@ export class FacilityListComponent {
   readonly firstRow = signal(0);
   readonly pageSize = signal(10);
   readonly searchTerm = signal('');
+  canManage(): boolean { return this.session.hasAnyRole('Admin', 'FacilityManager'); }
 
   constructor() {
     toObservable(this.searchTerm)

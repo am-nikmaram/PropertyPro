@@ -50,6 +50,8 @@ public class GetRoomLookupHandler
                 x.Id,
                 x.UnitId,
                 x.RoomTypeId,
+                x.Unit.Floor.BuildingId,
+                x.Unit.Floor.Building.FacilityId,
                 x.RoomNumber,
                 x.Name))
             .ToListAsync(cancellationToken);
