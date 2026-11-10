@@ -40,7 +40,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: PropertyPro.Api/Dockerfile
+      dockerfile: backend/PropertyPro.Api/Dockerfile
     container_name: propertypro-api
     restart: unless-stopped
     environment:
