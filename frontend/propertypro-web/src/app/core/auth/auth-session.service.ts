@@ -19,8 +19,7 @@ export class AuthSessionService {
 
   hasValidSession(): boolean {
     const user = this.currentUser();
-    const expiresAt = user ? Date.parse(user.expiresAt) : Number.NaN;
-    if (!user || !Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+    if (!user?.token || !user.refreshToken) {
       this.clear();
       return false;
     }

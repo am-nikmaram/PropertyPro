@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
+import { adminGuard } from './core/auth/admin.guard';
 
 export const routes: Routes = [
   {
@@ -11,6 +12,14 @@ export const routes: Routes = [
       ),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'facilities' },
+      {
+        path: 'users',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/users/pages/user-management/user-management.component').then(
+            (component) => component.UserManagementComponent,
+          ),
+      },
       {
         path: 'facilities/new',
         loadComponent: () =>

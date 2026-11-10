@@ -17,6 +17,7 @@
 
     <nav class="primary-nav" aria-label="Main navigation">
       <span class="nav-caption">MANAGE</span>
+      @if (isAdmin()) { <a class="nav-link" routerLink="/app/users" routerLinkActive="nav-active" (click)="closeSidebar()"><i class="pi pi-users" aria-hidden="true"></i><span>Users & access</span></a> }
       <a class="nav-link" routerLink="/app/facilities" routerLinkActive="nav-active" (click)="closeSidebar()">
         <i class="pi pi-building" aria-hidden="true"></i><span>Facilities</span><span class="nav-indicator"></span>
       </a>

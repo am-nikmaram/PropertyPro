@@ -32,6 +32,7 @@ export class AppShellComponent {
       .map((part) => part[0].toUpperCase())
       .join(''),
   );
+  readonly isAdmin = computed(() => this.session.hasAnyRole('Admin'));
 
   constructor() {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
@@ -43,6 +44,7 @@ export class AppShellComponent {
     const path = url.split('?')[0].split('/')[2];
     if (path === 'buildings') return 'Buildings';
     if (path === 'assets') return 'Assets';
+    if (path === 'users') return 'Users & access';
     return 'Facilities';
   }
 
