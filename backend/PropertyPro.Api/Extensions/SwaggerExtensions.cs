@@ -62,7 +62,7 @@ public static class SwaggerExtensions
     public static WebApplication UsePropertyProSwagger(
         this WebApplication app)
     {
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || app.Environment.IsProduction() )
         {
             app.UseSwagger();
 
